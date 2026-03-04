@@ -1,0 +1,23 @@
+{
+    "rewrites": [
+        {
+            "source": "/election-api/:path*",
+            "destination": "https://result.election.gov.np/:path*"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ],
+    "headers": [
+        {
+            "source": "/election-api/(.*)",
+            "headers": [
+                {
+                    "key": "Access-Control-Allow-Origin",
+                    "value": "*"
+                }
+            ]
+        }
+    ]
+}
