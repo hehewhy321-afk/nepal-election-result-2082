@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { Candidate } from "@/types/election";
 import { getPartyStats } from "@/lib/electionUtils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,6 +14,22 @@ interface Props {
 
 const PartyComparison = ({ data, parties }: Props) => {
   const [selectedParties, setSelectedParties] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (selectedParties.length === 0 && parties.length > 0) {
+      const defaults = [
+        "नेपाली काँग्रेस",
+        "नेपाल कम्युनिष्ट पार्टी (एकीकृत मार्क्सवादी-लेनिनवादी)",
+        "नेपाल कम्युनिस्ट पार्टी (माओवादी केन्द्र)",
+        "राष्ट्रिय स्वतन्त्र पार्टी"
+      ];
+      // Filter the official parties list to find matches for our defaults
+      const found = parties.filter(p => defaults.some(d => p.startsWith(d) || d.startsWith(p)));
+      if (found.length > 0) {
+        setSelectedParties(found.slice(0, 5));
+      }
+    }
+  }, [parties, selectedParties.length]);
 
   const allPartyStats = useMemo(() => getPartyStats(data), [data]);
 
