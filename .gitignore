@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Production Clean-up
+public/data/raw
+scripts/sync-data.cjs.local
