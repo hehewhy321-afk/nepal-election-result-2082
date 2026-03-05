@@ -40,16 +40,37 @@ async function syncRaw() {
     const headers = {
         'X-CSRF-Token': token,
         'Cookie': tokenCookie.split(';')[0],
-        'Referer': 'https://result.election.gov.np/MapElectionResult2082.aspx',
+        'Referer': 'https://result.election.gov.np/ElectionResultCentral2082.aspx',
         'User-Agent': userAgent,
         'Accept': 'application/json, text/javascript, */*; q=0.01'
     };
 
-    // 2. Fetch Lookup
+    // 2. Try Centralized Feed First (Fastest)
+    console.log("Attempting Centralized Global Sync...");
+    try {
+        const centralUrl = 'https://result.election.gov.np/Handlers/SecureJson.ashx?file=JSONFiles/ElectionResultCentral2082.txt';
+        const res = await httpsGet(centralUrl, headers);
+        if (res.status === 200) {
+            const text = cleanString(res.data.toString('utf8'));
+            const data = JSON.parse(text);
+            if (Array.isArray(data) && data.length > 3000) {
+                fs.writeFileSync(finalPath, JSON.stringify(data, null, 2), 'utf8');
+                console.log(`\nSUCCESS: Centralized Sync Complete.`);
+                console.log(`- Candidates Found: ${data.length}`);
+                console.log(`- Database saved to ${finalPath}`);
+                return; // Goal achieved
+            }
+        }
+        console.log("Central feed incomplete or unavailable. Falling back to multi-segment sync...");
+    } catch (e) {
+        console.log(`Central feed failed (${e.message}). Falling back to multi-segment sync...`);
+    }
+
+    // 3. Fallback: Multi-Segment Sync
     const lookupRes = await httpsGet('https://result.election.gov.np/Handlers/SecureJson.ashx?file=JSONFiles/Election2082/HOR/Lookup/constituencies.json', headers);
     const lookup = JSON.parse(cleanString(lookupRes.data.toString('utf8')));
 
-    console.log(`Starting Download Sequence for 165 segments...`);
+    console.log(`Starting Segmented Download for 165 files...`);
     let downloaded = 0;
 
     for (const dist of lookup) {
@@ -86,11 +107,10 @@ async function syncRaw() {
         }
     }
 
-    // 3. Final Merge with Sanitization
+    // Final Merge with Sanitization
     console.log(`\nMerging ${downloaded} segments into final database...`);
     let allCandidates = [];
     const processedKeys = new Set();
-    const uniqueDistricts = new Set();
 
     fs.readdirSync(rawDir).forEach(file => {
         if (!file.endsWith('.json')) return;
@@ -106,7 +126,6 @@ async function syncRaw() {
                     if (!processedKeys.has(cKey)) {
                         allCandidates.push(c);
                         processedKeys.add(cKey);
-                        uniqueDistricts.add(c.DistrictName);
                     }
                 });
             }
@@ -116,9 +135,7 @@ async function syncRaw() {
     });
 
     fs.writeFileSync(finalPath, JSON.stringify(allCandidates, null, 2), 'utf8');
-    console.log(`Final Database Ready:`);
-    console.log(`- Districts: ${uniqueDistricts.size} (Target: 77)`);
-    console.log(`- Candidates: ${allCandidates.length}`);
+    console.log(`Database Merged: ${allCandidates.length} candidates.`);
 }
 
 async function start() {
