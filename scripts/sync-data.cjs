@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36";
-const rawDir = path.join(__dirname, 'public/data/raw');
-const finalPath = path.join(__dirname, 'public/data/election-results-2082.json');
+const rawDir = path.join(__dirname, '../public/data/raw');
+const finalPath = path.join(__dirname, '../public/data/election-results-2082.json');
 
 if (!fs.existsSync(rawDir)) fs.mkdirSync(rawDir, { recursive: true });
 
@@ -12,7 +12,7 @@ function httpsGet(url, headers) {
     return new Promise((resolve, reject) => {
         const req = https.get(url, { headers, timeout: 20000 }, (res) => {
             if (res.statusCode < 200 || res.statusCode >= 300) {
-                return reject(new Error(`Status: ${res.statusCode}`));
+                return reject(new Error(`Failed to fetch ${url} - Status: ${res.statusCode}`));
             }
             let data = Buffer.alloc(0);
             res.on('data', chunk => data = Buffer.concat([data, chunk]));
@@ -29,7 +29,8 @@ function cleanString(str) {
 }
 
 async function syncRaw() {
-    console.log("Segmented Sync 2.0 - 100% Fidelity Mode");
+    const isCI = process.env.CI || process.env.VERCEL;
+    console.log(`Segmented Sync 2.0 - ${isCI ? 'CI Deployment' : 'Local'} Mode`);
 
     // 1. Session Setup
     const sessionRes = await httpsGet('https://result.election.gov.np/', { 'User-Agent': userAgent });
@@ -78,8 +79,8 @@ async function syncRaw() {
                     success = true;
                     downloaded++;
                 } catch (e) {
-                    process.stdout.write("x");
-                    await new Promise(r => setTimeout(r, 4000));
+                    console.log(`\n[Attempt ${retries}] Error fetching ${fileName}: ${e.message}`);
+                    await new Promise(r => setTimeout(r, isCI ? 5000 : 3000));
                 }
             }
         }
@@ -131,4 +132,7 @@ async function start() {
     } while (isWatch);
 }
 
-start().catch(console.error);
+start().catch(err => {
+    console.error("FATAL ERROR:", err);
+    process.exit(1);
+});
