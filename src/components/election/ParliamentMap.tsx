@@ -103,7 +103,7 @@ const ParliamentMap = ({ data }: ParliamentMapProps) => {
                                     <button
                                         className={cn(
                                             "absolute w-[2.2%] sm:w-[2.6%] lg:w-[3%] aspect-square transition-all duration-300 hover:scale-[1.8] hover:z-20 cursor-help flex items-center justify-center",
-                                            seat.leaderVotes > 0 ? "text-primary opacity-100" : "text-slate-300 dark:text-slate-700 opacity-50"
+                                            seat.leaderVotes > 0 ? "opacity-100 drop-shadow-sm" : "text-slate-300 dark:text-slate-700 opacity-50"
                                         )}
                                         style={{
                                             left: seat.x,
@@ -112,7 +112,7 @@ const ParliamentMap = ({ data }: ParliamentMapProps) => {
                                             color: seat.leaderVotes > 0 ? seat.color : undefined
                                         }}
                                     >
-                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full drop-shadow-sm">
+                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
                                             <path d="M7 11V7a5 5 0 0 1 10 0v4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h1zM9 7v4h6V7a3 3 0 0 0-6 0z" />
                                         </svg>
                                     </button>
