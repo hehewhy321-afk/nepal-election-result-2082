@@ -18,7 +18,7 @@ const PartyChart = ({ data }: Props) => {
     const donutData = [
         ...top10,
         ...(others.length > 0
-            ? [{ party: "Others / अन्य", totalVotes: others.reduce((s, p) => s + p.totalVotes, 0), candidates: others.reduce((s, p) => s + p.candidates, 0), color: "#9E9E9E" }]
+            ? [{ party: "Others", totalVotes: others.reduce((s, p) => s + p.totalVotes, 0), candidates: others.reduce((s, p) => s + p.candidates, 0), color: "#9E9E9E" }]
             : []),
     ];
 
@@ -33,10 +33,10 @@ const PartyChart = ({ data }: Props) => {
             <div className="flex items-start justify-between mb-4 gap-3">
                 <div>
                     <h3 className="text-lg font-heading font-bold text-card-foreground">
-                        पार्टी अनुसार विश्लेषण
+                        Party-wise Analysis
                     </h3>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                        Party-wise Analysis · {data.length} parties
+                        Performance of {data.length} political parties
                     </p>
                 </div>
                 <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
@@ -44,8 +44,8 @@ const PartyChart = ({ data }: Props) => {
                         onClick={() => setView("donut")}
                         title="Donut chart"
                         className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${view === "donut"
-                                ? "bg-background text-foreground shadow-sm"
-                                : "text-muted-foreground hover:text-foreground"
+                            ? "bg-background text-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
                             }`}
                     >
                         <PieIcon className="w-3.5 h-3.5" />
@@ -55,8 +55,8 @@ const PartyChart = ({ data }: Props) => {
                         onClick={() => setView("bar")}
                         title="Bar chart"
                         className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${view === "bar"
-                                ? "bg-background text-foreground shadow-sm"
-                                : "text-muted-foreground hover:text-foreground"
+                            ? "bg-background text-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
                             }`}
                     >
                         <BarChart2 className="w-3.5 h-3.5" />

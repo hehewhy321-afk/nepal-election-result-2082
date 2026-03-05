@@ -23,10 +23,10 @@ const CountingProgress = ({ data }: Props) => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                 <div>
                     <h3 className="text-sm font-heading font-bold text-foreground">
-                        मतगणना प्रगति — Counting Progress
+                        Counting Progress
                     </h3>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
-                        Constituencies where counting has begun / मत गनिएका क्षेत्र
+                        Constituencies where counting has begun
                     </p>
                 </div>
                 <div className="text-right">

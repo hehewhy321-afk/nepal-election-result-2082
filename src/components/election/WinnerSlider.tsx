@@ -112,7 +112,7 @@ const WinnerSlider = ({ data, onSelectCandidate }: Props) => {
                     </div>
                     <div>
                         <h3 className="text-sm font-heading font-bold text-foreground leading-tight">
-                            निर्वाचन क्षेत्र प्रदर्शन
+                            Constituency Spotlight
                         </h3>
                         <p className="text-[11px] text-muted-foreground">Constituency Spotlight · Auto-rotating results</p>
                     </div>
@@ -186,7 +186,7 @@ const WinnerSlider = ({ data, onSelectCandidate }: Props) => {
                             </h2>
                             {c.AGE_YR > 0 && (
                                 <p className="text-xs text-muted-foreground mt-0.5">
-                                    Age / उमेर: {c.AGE_YR} · {c.Gender}
+                                    Age: {c.AGE_YR} · {c.Gender}
                                 </p>
                             )}
                         </div>
@@ -227,25 +227,25 @@ const WinnerSlider = ({ data, onSelectCandidate }: Props) => {
                                         >
                                             {votes.toLocaleString()}
                                         </span>
-                                        <span className="text-sm text-muted-foreground font-medium">votes · मत प्राप्त</span>
+                                        <span className="text-sm text-muted-foreground font-medium">votes received</span>
                                     </>
                                 ) : (
                                     <span className="badge-pending text-sm px-3 py-1.5">
-                                        Counting pending · मतगणना अपेक्षित
+                                        Counting pending
                                     </span>
                                 )}
                             </div>
 
                             {votes > 0 && secondPlace && margin > 0 && (
                                 <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                                    Lead / अग्रता: {margin.toLocaleString()} votes over {secondPlace.CandidateName}
+                                    Lead: {margin.toLocaleString()} votes over {secondPlace.CandidateName}
                                 </p>
                             )}
                         </div>
 
                         {/* Extra detail line */}
                         <p className="text-[11px] text-muted-foreground">
-                            Area / क्षेत्र {c.SCConstID} • {c.DistrictName}, {c.StateName}
+                            Area {c.SCConstID} • {c.DistrictName}, {c.StateName}
                             {c.QUALIFICATION && ` • ${c.QUALIFICATION}`}
                         </p>
                     </div>

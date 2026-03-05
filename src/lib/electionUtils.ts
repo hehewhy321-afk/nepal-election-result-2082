@@ -79,3 +79,37 @@ export function getDistrictStats(data: Candidate[]) {
     .map(([district, stats]) => ({ district, ...stats }))
     .sort((a, b) => b.totalVotes - a.totalVotes);
 }
+
+export function getParliamentSeats(data: Candidate[]) {
+  const constituencies = new Map<string, Candidate[]>();
+
+  data.forEach((c) => {
+    const key = `${c.DistrictCd}-${c.SCConstID}`;
+    const existing = constituencies.get(key) || [];
+    existing.push(c);
+    constituencies.set(key, existing);
+  });
+
+  return Array.from(constituencies.entries()).map(([id, candidates]) => {
+    // Sort by votes to find leader
+    const sorted = [...candidates].sort((a, b) => (b.TotalVoteReceived || 0) - (a.TotalVoteReceived || 0));
+    const leader = sorted[0];
+    const totalVotes = candidates.reduce((sum, c) => sum + (c.TotalVoteReceived || 0), 0);
+
+    // Simple heuristic for "Won" vs "Leading" - ECN has a Rank field, but we'll use votes
+    // For now, if votes > 0, they are "Leading". 
+    // Usually Rank "1" and some marker for "Elected" is needed.
+
+    return {
+      id,
+      district: leader.DistrictName,
+      constituency: String(leader.SCConstID),
+      leaderName: leader.CandidateName,
+      leaderParty: leader.PoliticalPartyName,
+      leaderVotes: leader.TotalVoteReceived || 0,
+      totalVotes,
+      isWon: leader.Rank === "1" && leader.TotalVoteReceived > 0, // Placeholder logic
+      color: getPartyColor(leader.PoliticalPartyName, 0)
+    };
+  });
+}

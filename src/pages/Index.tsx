@@ -23,9 +23,14 @@ import GenderByProvinceChart from "@/components/election/GenderByProvinceChart";
 import DemographicsCharts from "@/components/election/DemographicsCharts";
 import TopWinnersLeaderboard from "@/components/election/TopWinnersLeaderboard";
 import CSVExportButton from "@/components/election/CSVExportButton";
-import PartyComparison from "@/components/election/PartyComparison";
 import ResultStatus from "@/components/election/ResultStatus";
-import { Loader2 } from "lucide-react";
+import DashboardNav, { TabType } from "@/components/election/DashboardNav";
+import OverviewView from "@/components/election/OverviewView";
+import ParliamentMap from "@/components/election/ParliamentMap";
+import PartyResultsView from "@/components/election/PartyResultsView";
+import CandidatesView from "@/components/election/CandidatesView";
+import WinnersGallery from "@/components/election/WinnersGallery";
+import { Loader2, Trophy } from "lucide-react";
 
 const REFRESH_INTERVAL = 60; // seconds
 
@@ -41,6 +46,9 @@ const Index = () => {
   const [district, setDistrict] = useState("all");
   const [constituency, setConstituency] = useState("all");
   const [party, setParty] = useState("all");
+
+  // Navigation state
+  const [activeTab, setActiveTab] = useState<TabType>("overview");
 
   // Modal / detail state
   const [selectedConstituency, setSelectedConstituency] = useState<{ id: number; district: string } | null>(null);
@@ -91,6 +99,8 @@ const Index = () => {
         const q = search.toLowerCase();
         if (
           !c.CandidateName.toLowerCase().includes(q) &&
+          !String(c.CandidateID).includes(q) &&
+          !String(c.SCConstID).includes(q) &&
           !c.DistrictName.toLowerCase().includes(q) &&
           !c.PoliticalPartyName.toLowerCase().includes(q)
         ) return false;
@@ -135,9 +145,9 @@ const Index = () => {
           <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
             <span className="text-2xl">⚠️</span>
           </div>
-          <h2 className="text-xl font-heading font-bold text-foreground mb-2">डाटा लोड गर्न सकिएन</h2>
+          <h2 className="text-xl font-heading font-bold text-foreground mb-2">Failed to Load Data</h2>
           <p className="text-sm text-muted-foreground">
-            Unable to load election data. Please try again later. / कृपया पछि पुनः प्रयास गर्नुहोस्।
+            Unable to load election data. Please try again later.
           </p>
         </div>
       </div>
@@ -150,129 +160,83 @@ const Index = () => {
       <HeroSection />
 
       <div className="container mx-auto px-3 sm:px-4 -mt-6 relative z-20 space-y-5 pb-16 max-w-screen-xl">
+        {/* ── Dashboard Navigation ── */}
+        <DashboardNav activeTab={activeTab} onTabChange={setActiveTab} />
 
         {/* ── Result Status Banner ── */}
         {data && (
           <ResultStatus data={data} isFetching={isFetching} lastUpdated={lastUpdated} />
         )}
 
-        {/* ── Stats ── */}
-        <StatsCards data={filteredData} />
-
-        {/* ── Progress & Quick Jump ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <CountingProgress data={data || []} />
-          <FindMyConstituency
+        {/* ── Tab Content ── */}
+        {activeTab === "overview" && (
+          <OverviewView
             data={data || []}
-            onSelectConstituency={setSelectedConstituency}
+            filteredData={filteredData}
+            partyStats={partyStats}
+            provinceStats={provinceStats}
+            topCandidates={topCandidates}
             onSelectCandidate={setSelectedCandidate}
+            onSelectConstituency={setSelectedConstituency}
           />
-        </div>
-
-        {/* ── Winner / Constituency Spotlight Slider ── */}
-        {data && data.length > 0 && (
-          <WinnerSlider data={filteredData.length > 0 ? filteredData : data} onSelectCandidate={setSelectedCandidate} />
         )}
 
-        {/* ── Search & Filters + Auto Refresh ── */}
-        <div className="flex flex-col lg:flex-row gap-3">
-          <div className="flex-1 min-w-0">
-            <SearchFilter
-              search={search}
-              onSearchChange={setSearch}
-              province={province}
-              onProvinceChange={(v) => { setProvince(v); setDistrict("all"); setConstituency("all"); }}
-              provinces={provinces}
-              district={district}
-              onDistrictChange={(v) => { setDistrict(v); setConstituency("all"); }}
-              districts={districts}
-              constituency={constituency}
-              onConstituencyChange={setConstituency}
-              constituencies={constituencies}
-              party={party}
-              onPartyChange={setParty}
-              parties={parties}
-            />
+        {activeTab === "parliament" && (
+          <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+            <ParliamentMap data={data || []} />
+            <ProvinceChart data={provinceStats} />
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <CSVExportButton data={filteredData} />
-            <AutoRefreshTimer
-              isRefreshing={isFetching}
-              enabled={autoRefresh}
-              onToggle={setAutoRefresh}
-              intervalSeconds={REFRESH_INTERVAL}
-            />
-          </div>
-        </div>
+        )}
 
-        {/* ── Top Leaders ── */}
-        <TopWinnersLeaderboard data={data || []} onSelectCandidate={setSelectedCandidate} />
+        {activeTab === "party" && (
+          <PartyResultsView data={data || []} parties={parties} districtStats={districtStats} />
+        )}
 
-        {/* ── High Priority Analysis ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <PartyChart data={partyStats} />
-          <ProvinceChart data={provinceStats} />
-        </div>
+        {activeTab === "candidates" && (
+          <CandidatesView
+            filteredData={filteredData}
+            search={search}
+            setSearch={setSearch}
+            province={province}
+            setProvince={setProvince}
+            provinces={provinces}
+            district={district}
+            setDistrict={setDistrict}
+            districts={districts}
+            constituency={constituency}
+            setConstituency={setConstituency}
+            constituencies={constituencies}
+            party={party}
+            setParty={setParty}
+            parties={parties}
+            isFetching={isFetching}
+            autoRefresh={autoRefresh}
+            setAutoRefresh={setAutoRefresh}
+            refreshInterval={REFRESH_INTERVAL}
+            onSelectCandidate={setSelectedCandidate}
+          />
+        )}
 
-        <PartyComparison data={filteredData} parties={parties} />
+        {activeTab === "winners" && (
+          <WinnersGallery data={data || []} onSelectCandidate={setSelectedCandidate} />
+        )}
 
-        {/* ── Candidate Results Grid (Active filter or General) ── */}
-        <div className="space-y-6">
-          {(district !== "all" || constituency !== "all") ? (
-            <div>
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-1 h-6 rounded-full gradient-nepal shadow-sm" />
-                  <h2 className="font-heading font-bold text-lg text-foreground">
-                    {district !== "all" ? district : ""}
-                    {constituency !== "all" ? ` · Area / क्षेत्र ${constituency}` : ""} – Result / परिणाम
-                  </h2>
-                </div>
-                <p className="text-xs text-muted-foreground font-medium">
-                  Found {filteredData.length} candidates
-                </p>
+        {activeTab === "search" && (
+          <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+            <div className="max-w-3xl mx-auto space-y-8">
+              <div className="text-center">
+                <h2 className="text-3xl font-heading font-bold mb-2">Find Results by Area</h2>
+                <p className="text-muted-foreground">Select your region to see the latest vote counts</p>
               </div>
-              <CandidateGrid data={filteredData} onSelectCandidate={setSelectedCandidate} />
+
+              <FindMyConstituency
+                data={data || []}
+                onSelectConstituency={setSelectedConstituency}
+                onSelectCandidate={setSelectedCandidate}
+              />
             </div>
-          ) : (
-            <div>
-              <div className="mb-4 flex items-center gap-2">
-                <span className="w-1 h-6 rounded-full gradient-nepal shadow-sm" />
-                <h2 className="font-heading font-bold text-lg text-foreground">
-                  Highlighting Candidates / प्रमुख उम्मेदवारहरू
-                </h2>
-              </div>
-              <CandidateGrid data={filteredData} onSelectCandidate={setSelectedCandidate} />
-            </div>
-          )}
-        </div>
-
-        {/* ── Detailed Result Lists ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <TopCandidatesTable data={topCandidates} />
-          <ConstituencyList data={filteredData} onSelect={setSelectedConstituency} />
-        </div>
-
-        <DistrictTable data={districtStats} />
-
-        <div className="pt-8 border-t border-border/30">
-          <div className="mb-6">
-            <h2 className="text-xl font-heading font-bold text-foreground">Data Insights & Analytics</h2>
-            <p className="text-sm text-muted-foreground">Detailed breakdowns and demographic analysis of the 2082 election</p>
           </div>
-
-          <div className="space-y-5">
-            {/* ── Charts Row: Gender + Provincial Gender ── */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              <GenderPieChart data={genderStats} />
-              <GenderByProvinceChart data={filteredData} />
-            </div>
-
-            {/* ── Charts Row: Demographics & Age ── */}
-            <DemographicsCharts data={filteredData} />
-            <AgeDistributionChart data={filteredData} />
-          </div>
-        </div>
+        )}
 
         {/* ── Footer ── */}
         <footer className="text-center py-8 border-t border-border/50">

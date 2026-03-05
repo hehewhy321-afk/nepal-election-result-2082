@@ -14,8 +14,7 @@ const StatsCards = ({ data }: StatsCardsProps) => {
 
   const stats = [
     {
-      label: "कुल उम्मेदवार",
-      sublabel: "Total Candidates",
+      label: "Total Candidates",
       value: totalCandidates.toLocaleString(),
       icon: Users,
       gradient: "from-red-500/20 to-rose-600/20",
@@ -24,8 +23,7 @@ const StatsCards = ({ data }: StatsCardsProps) => {
       border: "hover:border-red-200 dark:hover:border-red-800",
     },
     {
-      label: "कुल मत",
-      sublabel: "Total Votes Counted",
+      label: "Total Votes",
       value: totalVotes > 0 ? totalVotes.toLocaleString() : "—",
       icon: Vote,
       gradient: "from-blue-500/20 to-indigo-600/20",
@@ -34,8 +32,7 @@ const StatsCards = ({ data }: StatsCardsProps) => {
       border: "hover:border-blue-200 dark:hover:border-blue-800",
     },
     {
-      label: "राजनीतिक दल",
-      sublabel: "Political Parties",
+      label: "Political Parties",
       value: totalParties.toLocaleString(),
       icon: Building2,
       gradient: "from-amber-500/20 to-orange-600/20",
@@ -44,8 +41,7 @@ const StatsCards = ({ data }: StatsCardsProps) => {
       border: "hover:border-amber-200 dark:hover:border-amber-800",
     },
     {
-      label: "जिल्ला",
-      sublabel: "Districts",
+      label: "Districts",
       value: totalDistricts.toLocaleString(),
       icon: MapPin,
       gradient: "from-emerald-500/20 to-green-600/20",
@@ -54,8 +50,7 @@ const StatsCards = ({ data }: StatsCardsProps) => {
       border: "hover:border-emerald-200 dark:hover:border-emerald-800",
     },
     {
-      label: "निर्वाचन क्षेत्र",
-      sublabel: "Constituencies",
+      label: "Constituencies",
       value: totalConstituencies.toLocaleString(),
       icon: TrendingUp,
       gradient: "from-purple-500/20 to-violet-600/20",
@@ -80,7 +75,6 @@ const StatsCards = ({ data }: StatsCardsProps) => {
             {s.value}
           </p>
           <p className="text-xs font-semibold text-card-foreground mt-1.5">{s.label}</p>
-          <p className="text-[11px] text-muted-foreground">{s.sublabel}</p>
         </div>
       ))}
     </div>

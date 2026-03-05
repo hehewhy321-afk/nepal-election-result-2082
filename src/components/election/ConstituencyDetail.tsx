@@ -7,7 +7,7 @@ import { getPartyColor } from "@/lib/electionUtils";
 
 interface Props {
   data: Candidate[];
-  constituencyId: number;
+  constituencyId: string | number;
   districtName: string;
   onClose: () => void;
 }
@@ -15,7 +15,7 @@ interface Props {
 const ConstituencyDetail = ({ data, constituencyId, districtName, onClose }: Props) => {
   const candidates = useMemo(() => {
     return data
-      .filter((c) => c.SCConstID === constituencyId && c.DistrictName === districtName)
+      .filter((c) => String(c.SCConstID) === String(constituencyId) && c.DistrictName === districtName)
       .sort((a, b) => (b.TotalVoteReceived || 0) - (a.TotalVoteReceived || 0));
   }, [data, constituencyId, districtName]);
 
@@ -34,13 +34,13 @@ const ConstituencyDetail = ({ data, constituencyId, districtName, onClose }: Pro
         <div className="gradient-nepal rounded-t-2xl px-6 py-5 flex items-start justify-between">
           <div>
             <h2 className="text-xl font-heading font-bold text-primary-foreground">
-              निर्वाचन क्षेत्र नं. {constituencyId}
+              Constituency Area No. {constituencyId}
             </h2>
             <p className="text-sm text-primary-foreground/80 flex items-center gap-1 mt-1">
               <MapPin className="w-4 h-4" /> {districtName}, {stateName}
             </p>
             <p className="text-xs text-primary-foreground/60 mt-0.5">
-              कुल मत: {totalVotes.toLocaleString()} • उम्मेदवार: {candidates.length}
+              Total Votes: {totalVotes.toLocaleString()} • Candidates: {candidates.length}
             </p>
           </div>
           <button onClick={onClose} className="text-primary-foreground/80 hover:text-primary-foreground p-1">
@@ -50,7 +50,7 @@ const ConstituencyDetail = ({ data, constituencyId, districtName, onClose }: Pro
 
         {chartData.length > 0 && (
           <div className="px-6 pt-5">
-            <h3 className="text-sm font-heading font-semibold text-card-foreground mb-2">मत वितरण</h3>
+            <h3 className="text-sm font-heading font-semibold text-card-foreground mb-2">Vote Distribution</h3>
             <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} layout="vertical" margin={{ left: 5, right: 15 }}>
@@ -69,16 +69,16 @@ const ConstituencyDetail = ({ data, constituencyId, districtName, onClose }: Pro
         )}
 
         <div className="px-6 pb-6 pt-3">
-          <h3 className="text-sm font-heading font-semibold text-card-foreground mb-2">सबै उम्मेदवारहरू</h3>
+          <h3 className="text-sm font-heading font-semibold text-card-foreground mb-2">All Candidates</h3>
           <div className="overflow-x-auto max-h-[300px] overflow-y-auto">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-10">#</TableHead>
-                  <TableHead>उम्मेदवार</TableHead>
-                  <TableHead>दल</TableHead>
-                  <TableHead>चिन्ह</TableHead>
-                  <TableHead className="text-right">मत</TableHead>
+                  <TableHead>Candidate</TableHead>
+                  <TableHead>Party</TableHead>
+                  <TableHead>Symbol</TableHead>
+                  <TableHead className="text-right">Votes</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -92,7 +92,7 @@ const ConstituencyDetail = ({ data, constituencyId, districtName, onClose }: Pro
                         </div>
                         <div>
                           <p className="font-semibold text-sm">{c.CandidateName}</p>
-                          <p className="text-xs text-muted-foreground">{c.Gender}, {c.AGE_YR} वर्ष</p>
+                          <p className="text-xs text-muted-foreground">{c.Gender}, {c.AGE_YR} Years</p>
                         </div>
                       </div>
                     </TableCell>

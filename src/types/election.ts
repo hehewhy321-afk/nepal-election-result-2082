@@ -21,6 +21,8 @@ export interface Candidate {
   ADDRESS: string;
   FATHER_NAME: string;
   SPOUCE_NAME: string;
+  DistrictCd: number;
+  Rank: string;
 }
 
 export interface PartyStats {

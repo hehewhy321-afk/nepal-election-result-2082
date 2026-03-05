@@ -68,7 +68,7 @@ const CSVExportButton = ({ data, filename = "nepal-election-results-2082.csv" }:
                 disabled={data.length === 0}
             >
                 <Download className="w-4 h-4" />
-                Export CSV / डाटा डाउनलोड
+                Export CSV
             </button>
         </div>
     );

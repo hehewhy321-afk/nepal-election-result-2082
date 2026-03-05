@@ -46,7 +46,7 @@ const TopWinnersLeaderboard = ({ data, onSelectCandidate }: Props) => {
                     </div>
                     <div>
                         <h3 className="text-sm font-heading font-bold text-foreground">
-                            शीर्ष मत प्राप्तकर्ता — Top Vote Getters
+                            Top Vote Getters
                         </h3>
                         <p className="text-[11px] text-muted-foreground">
                             Highest vote-getters nationwide · one per constituency
@@ -62,9 +62,6 @@ const TopWinnersLeaderboard = ({ data, onSelectCandidate }: Props) => {
                 <div className="px-5 py-10 text-center">
                     <p className="text-sm text-muted-foreground">
                         No votes counted yet. This leaderboard will populate as counting begins.
-                    </p>
-                    <p className="text-xs text-muted-foreground/60 mt-1">
-                        मतगणना सुरु भएपछि यहाँ देखिनेछ।
                     </p>
                 </div>
             ) : (

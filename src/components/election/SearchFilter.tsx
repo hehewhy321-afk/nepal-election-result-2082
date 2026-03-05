@@ -45,7 +45,7 @@ const SearchFilter = ({
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="उम्मेदवार / जिल्ला खोज्नुहोस्... (Search candidate or district)"
+            placeholder="Search candidates by name, ID, district..."
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-10 pr-4 h-10 rounded-xl border-border/70 bg-background/60 focus-visible:ring-primary/30"
@@ -63,12 +63,12 @@ const SearchFilter = ({
         <button
           onClick={() => setExpanded(!expanded)}
           className={`flex items-center gap-2 px-4 h-10 rounded-xl border text-sm font-medium transition-colors ${expanded || activeFilters > 0
-              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-              : "border-border/70 text-muted-foreground hover:text-foreground hover:border-border"
+            ? "bg-primary text-primary-foreground border-primary shadow-sm"
+            : "border-border/70 text-muted-foreground hover:text-foreground hover:border-border"
             }`}
         >
           <SlidersHorizontal className="w-4 h-4" />
-          <span className="hidden sm:inline">फिल्टर</span>
+          <span className="hidden sm:inline">Filters</span>
           {activeFilters > 0 && (
             <span className="bg-primary-foreground/20 text-primary-foreground text-xs px-1.5 py-0.5 rounded-full font-bold">
               {activeFilters}
@@ -82,7 +82,7 @@ const SearchFilter = ({
             className="flex items-center gap-1.5 px-3 h-10 rounded-xl border border-border/70 text-xs text-muted-foreground hover:text-destructive hover:border-destructive/40 transition-colors"
           >
             <X className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">सबै हटाउनुस्</span>
+            <span className="hidden sm:inline">Clear All</span>
           </button>
         )}
       </div>
@@ -92,13 +92,13 @@ const SearchFilter = ({
         <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-muted/20 animate-slide-in-up">
           {/* Province */}
           <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">प्रदेश / Province</label>
+            <label className="text-xs font-medium text-muted-foreground">Province</label>
             <Select value={province} onValueChange={(v) => { onProvinceChange(v); onDistrictChange("all"); onConstituencyChange("all"); }}>
               <SelectTrigger className="h-9 text-sm rounded-xl bg-background">
-                <SelectValue placeholder="सबै प्रदेश" />
+                <SelectValue placeholder="All Provinces" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">सबै प्रदेश</SelectItem>
+                <SelectItem value="all">All Provinces</SelectItem>
                 {provinces.map((p) => (
                   <SelectItem key={p} value={p}>{p}</SelectItem>
                 ))}
@@ -108,13 +108,13 @@ const SearchFilter = ({
 
           {/* District */}
           <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">जिल्ला / District</label>
+            <label className="text-xs font-medium text-muted-foreground">District</label>
             <Select value={district} onValueChange={(v) => { onDistrictChange(v); onConstituencyChange("all"); }}>
               <SelectTrigger className="h-9 text-sm rounded-xl bg-background">
-                <SelectValue placeholder="सबै जिल्ला" />
+                <SelectValue placeholder="All Districts" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">सबै जिल्ला</SelectItem>
+                <SelectItem value="all">All Districts</SelectItem>
                 {districts.map((d) => (
                   <SelectItem key={d} value={d}>{d}</SelectItem>
                 ))}
@@ -124,13 +124,13 @@ const SearchFilter = ({
 
           {/* Constituency */}
           <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">निर्वाचन क्षेत्र / Area</label>
+            <label className="text-xs font-medium text-muted-foreground">Area</label>
             <Select value={constituency} onValueChange={onConstituencyChange}>
               <SelectTrigger className="h-9 text-sm rounded-xl bg-background">
-                <SelectValue placeholder="सबै क्षेत्र" />
+                <SelectValue placeholder="All Areas" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">सबै क्षेत्र</SelectItem>
+                <SelectItem value="all">All Areas</SelectItem>
                 {constituencies.map((c) => (
                   <SelectItem key={c} value={c}>{c}</SelectItem>
                 ))}
@@ -140,13 +140,13 @@ const SearchFilter = ({
 
           {/* Party */}
           <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">राजनीतिक दल / Party</label>
+            <label className="text-xs font-medium text-muted-foreground">Party</label>
             <Select value={party} onValueChange={onPartyChange}>
               <SelectTrigger className="h-9 text-sm rounded-xl bg-background">
-                <SelectValue placeholder="सबै दल" />
+                <SelectValue placeholder="All Parties" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">सबै दल</SelectItem>
+                <SelectItem value="all">All Parties</SelectItem>
                 {parties.slice(0, 30).map((p) => (
                   <SelectItem key={p} value={p}>{p.length > 35 ? p.slice(0, 35) + "…" : p}</SelectItem>
                 ))}

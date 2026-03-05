@@ -10,8 +10,8 @@ interface Props {
 const ProvinceChart = ({ data }: Props) => {
   return (
     <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
-      <h3 className="text-lg font-heading font-bold text-card-foreground mb-1">प्रदेश अनुसार मत</h3>
-      <p className="text-xs text-muted-foreground mb-4">Province-wise Votes</p>
+      <h3 className="text-lg font-heading font-bold text-card-foreground mb-1">Province-wise Votes</h3>
+      <p className="text-xs text-muted-foreground mb-4">Total votes received by all candidates in each province</p>
       <div className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ bottom: 40 }}>

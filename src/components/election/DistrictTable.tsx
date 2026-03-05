@@ -17,7 +17,7 @@ const DistrictTable = ({ data }: Props) => {
     <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
       <div className="flex items-center gap-2 mb-1">
         <MapPin className="w-5 h-5 text-secondary" />
-        <h3 className="text-lg font-heading font-bold text-card-foreground">जिल्ला अनुसार विवरण</h3>
+        <h3 className="text-lg font-heading font-bold text-card-foreground">District Results</h3>
       </div>
       <p className="text-xs text-muted-foreground mb-4">Top 20 Districts by Votes</p>
       <div className="overflow-x-auto">
@@ -25,9 +25,9 @@ const DistrictTable = ({ data }: Props) => {
           <TableHeader>
             <TableRow>
               <TableHead className="w-10">#</TableHead>
-              <TableHead>जिल्ला</TableHead>
-              <TableHead className="text-right">उम्मेदवार</TableHead>
-              <TableHead className="text-right">कुल मत</TableHead>
+              <TableHead>District</TableHead>
+              <TableHead className="text-right">Candidates</TableHead>
+              <TableHead className="text-right">Total Votes</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

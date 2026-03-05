@@ -62,6 +62,47 @@ const CandidateDetailModal = ({ candidate, onClose }: Props) => {
         return { rank, marginText, totalInConst: inConst.length };
     }, [candidate, data]);
 
+    // Party Name Mapping (Common top parties)
+    const partyNameMap: Record<string, string> = {
+        "नेपाली काँग्रेस": "Nepali Congress",
+        "नेकपा (एमाले)": "CPN (UML)",
+        "नेकपा (माओवादी केन्द्र)": "CPN (Maoist Centre)",
+        "राष्ट्रिय स्वतन्त्र पार्टी": "Rastriya Swatantra Party (RSP)",
+        "जनता समाजवादी पार्टी, नेपाल": "People's Socialist Party (PSP)",
+        "राष्ट्रिय प्रजातन्त्र पार्टी": "Rastriya Prajatantra Party (RPP)",
+        "नेकपा (एकीकृत समाजवादी)": "CPN (Unified Socialist)",
+        "लोकतान्त्रिक समाजवादी पार्टी, नेपाल": "Lokatantrik Samajwadi Party",
+        "नागरिक उन्मुक्ति पार्टी": "Nagarik Unmukti Party",
+        "नेपाल मजदुर किसान पार्टी": "Nepal Workers Peasants Party",
+        "स्वतन्त्र": "Independent"
+    };
+
+    const getPartyName = (name: string) => {
+        if (!name) return "";
+        if (partyNameMap[name]) return partyNameMap[name];
+
+        // Keyword-based matching for better reliability
+        if (name.includes("काँग्रेस") || name.includes("Congress")) return "Nepali Congress";
+        if (name.includes("एमाले") || name.includes("UML")) return "CPN (UML)";
+        if (name.includes("माओवादी") || name.includes("Maoist")) return "CPN (Maoist Centre)";
+        if (name.includes("स्वतन्त्र") || name.includes("Independent")) return "Independent";
+        if (name.includes("राष्ट्रिय स्वतन्त्र") || name.includes("RSP")) return "Rastriya Swatantra Party";
+        if (name.includes("समाजवादी") || name.includes("Socialist")) {
+            if (name.includes("एकिकृत")) return "CPN (Unified Socialist)";
+            if (name.includes("जनता")) return "People's Socialist Party";
+            return "Socialist Party";
+        }
+        if (name.includes("प्रजातन्त्र") || name.includes("RPP")) return "Rastriya Prajatantra Party";
+
+        return name;
+    };
+
+    const getGenderName = (gender: string) => {
+        if (gender === "पुरुष") return "Male";
+        if (gender === "महिला") return "Female";
+        return gender;
+    };
+
     if (!candidate) return null;
 
     const votes = candidate.TotalVoteReceived || 0;
@@ -111,7 +152,7 @@ const CandidateDetailModal = ({ candidate, onClose }: Props) => {
                             </p>
                         )}
                         <p className="text-[11px] text-muted-foreground mt-0.5 truncate">
-                            {candidate.PoliticalPartyName}
+                            {getPartyName(candidate.PoliticalPartyName)}
                         </p>
                     </div>
                     <button
@@ -134,11 +175,11 @@ const CandidateDetailModal = ({ candidate, onClose }: Props) => {
                             <Clock className="w-4 h-4 text-amber-500" />
                         )}
                         <span className="font-medium text-foreground">
-                            {votes > 0 ? `${votes.toLocaleString()} votes · मत` : "Counting pending · मतगणना अपेक्षित"}
+                            {votes > 0 ? `${votes.toLocaleString()} votes` : "Counting pending"}
                         </span>
                     </div>
                     <span className="text-xs text-muted-foreground">
-                        Constituency {candidate.SCConstID} · क्षेत्र {candidate.SCConstID}
+                        Constituency {candidate.SCConstID}
                     </span>
                 </div>
 
@@ -153,7 +194,7 @@ const CandidateDetailModal = ({ candidate, onClose }: Props) => {
                             </span>
                         )}
                         <span className="px-2.5 py-1 rounded-full bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium">
-                            {candidate.Gender === "पुरुष" ? "Male · पुरुष" : candidate.Gender === "महिला" ? "Female · महिला" : candidate.Gender}
+                            {getGenderName(candidate.Gender)}
                         </span>
                         {candidate.SymbolName && (
                             <span className="px-2.5 py-1 rounded-full bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 text-xs font-medium flex items-center gap-1">
@@ -166,47 +207,47 @@ const CandidateDetailModal = ({ candidate, onClose }: Props) => {
                     <div className="mt-1">
                         <InfoRow
                             icon={<MapPin className="w-3.5 h-3.5 text-muted-foreground" />}
-                            label="Address · ठेगाना"
+                            label="Address"
                             value={candidate.ADDRESS}
                         />
                         <InfoRow
                             icon={<Building2 className="w-3.5 h-3.5 text-muted-foreground" />}
-                            label="Party · राजनीतिक दल"
-                            value={candidate.PoliticalPartyName}
+                            label="Political Party"
+                            value={getPartyName(candidate.PoliticalPartyName)}
                         />
                         <InfoRow
                             icon={<Hash className="w-3.5 h-3.5 text-muted-foreground" />}
-                            label="Constituency · निर्वाचन क्षेत्र"
-                            value={`${candidate.DistrictName} · Area / क्षेत्र ${candidate.SCConstID}`}
+                            label="Constituency"
+                            value={`${candidate.DistrictName} · Area ${candidate.SCConstID}`}
                         />
                         <InfoRow
                             icon={<GraduationCap className="w-3.5 h-3.5 text-muted-foreground" />}
-                            label="Qualification · शैक्षिक योग्यता"
+                            label="Qualification"
                             value={candidate.QUALIFICATION}
                         />
                         <InfoRow
                             icon={<GraduationCap className="w-3.5 h-3.5 text-muted-foreground" />}
-                            label="Institution · शैक्षिक संस्थान"
+                            label="Institution"
                             value={candidate.NAMEOFINST}
                         />
                         <InfoRow
                             icon={<Briefcase className="w-3.5 h-3.5 text-muted-foreground" />}
-                            label="Experience · अनुभव"
+                            label="Experience"
                             value={candidate.EXPERIENCE}
                         />
                         <InfoRow
                             icon={<Users className="w-3.5 h-3.5 text-muted-foreground" />}
-                            label="Father's Name · बुबाको नाम"
+                            label="Father's Name"
                             value={candidate.FATHER_NAME}
                         />
                         <InfoRow
                             icon={<Users className="w-3.5 h-3.5 text-muted-foreground" />}
-                            label="Spouse Name · जीवनसाथीको नाम"
+                            label="Spouse Name"
                             value={candidate.SPOUCE_NAME}
                         />
                         <InfoRow
                             icon={<User className="w-3.5 h-3.5 text-muted-foreground" />}
-                            label="More Details · अतिरिक्त विवरण"
+                            label="Other Details"
                             value={candidate.OTHERDETAILS}
                         />
                     </div>
@@ -215,7 +256,7 @@ const CandidateDetailModal = ({ candidate, onClose }: Props) => {
                 {/* Footer */}
                 <div className="px-5 py-3 border-t border-border/50 bg-muted/30 text-center">
                     <p className="text-[11px] text-muted-foreground">
-                        Source: Election Commission Nepal · निर्वाचन आयोग नेपाल
+                        Source: Election Commission Nepal
                     </p>
                 </div>
             </div>

@@ -47,14 +47,14 @@ const CandidateGrid = ({ data, onSelectCandidate }: Props) => {
       <div className="flex items-start justify-between mb-4 gap-3">
         <div>
           <h3 className="text-lg font-heading font-bold text-card-foreground">
-            उम्मेदवार सूची
+            Candidate List
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Candidate List · {data.length.toLocaleString()} · Showing {start + 1}–{Math.min(start + PAGE_SIZE, data.length)}
           </p>
         </div>
         <span className="text-xs text-muted-foreground bg-muted px-2.5 py-1 rounded-full whitespace-nowrap">
-          Page / पृष्ठ {safePage}/{totalPages}
+          Page {safePage}/{totalPages}
         </span>
       </div>
 
@@ -62,7 +62,7 @@ const CandidateGrid = ({ data, onSelectCandidate }: Props) => {
       {visible.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground">
           <User className="w-12 h-12 mx-auto mb-3 opacity-20" />
-          <p className="font-medium">कोही उम्मेदवार भेटिएन</p>
+          <p className="font-medium">No candidates found</p>
           <p className="text-xs mt-1">No candidates found for these filters.</p>
         </div>
       ) : (
@@ -125,7 +125,7 @@ const CandidateGrid = ({ data, onSelectCandidate }: Props) => {
                     </p>
                     <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-0.5">
                       <MapPin className="w-3 h-3 flex-shrink-0" />
-                      {c.DistrictName} · Area / क्षेत्र {c.SCConstID}
+                      {c.DistrictName} · Area {c.SCConstID}
                     </p>
                   </div>
                 </div>
@@ -135,12 +135,12 @@ const CandidateGrid = ({ data, onSelectCandidate }: Props) => {
                   {votes > 0 ? (
                     <span className="text-base font-heading font-bold text-primary">
                       {votes.toLocaleString()}
-                      <span className="text-[11px] font-normal text-muted-foreground ml-1">votes · मत</span>
+                      <span className="text-[11px] font-normal text-muted-foreground ml-1">votes</span>
                     </span>
                   ) : (
                     <span className="badge-pending">
                       <Clock className="w-3 h-3" />
-                      Pending · अपेक्षित
+                      Pending
                     </span>
                   )}
                   <span className="text-[11px] text-muted-foreground">#{rank}</span>
@@ -175,8 +175,8 @@ const CandidateGrid = ({ data, onSelectCandidate }: Props) => {
                   key={p}
                   onClick={() => handlePage(p as number)}
                   className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${p === safePage
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "border border-border/70 text-muted-foreground hover:border-primary/40 hover:text-primary"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "border border-border/70 text-muted-foreground hover:border-primary/40 hover:text-primary"
                     }`}
                 >
                   {p}

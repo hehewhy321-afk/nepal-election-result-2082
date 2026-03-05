@@ -26,31 +26,31 @@ const HeroSection = () => {
         <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-4 py-1.5 mb-6">
           <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
           <span className="text-white text-xs sm:text-sm font-semibold tracking-wide">
-            🇳🇵 निर्वाचन २०८२ · ELECTION 2082
+            🇳🇵 Election 2082
           </span>
         </div>
 
         {/* Title */}
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-heading font-bold text-white mb-3 tracking-tight leading-tight">
-          <span className="text-gradient-shimmer">नेपाल निर्वाचन परिणाम</span>
+          <span className="text-gradient-shimmer">Nepal Election Results</span>
         </h1>
         <p className="text-base sm:text-xl text-white/80 font-medium mb-2">
           Nepal Election Results Portal 2082
         </p>
         <p className="text-xs sm:text-sm text-white/60 max-w-xl mx-auto">
-          प्रतिनिधि सभा सदस्य निर्वाचनको मतगणना प्रगति विवरण
+          Real-time updates and analysis of the 2082 House of Representatives counting progress.
         </p>
 
         {/* Quick stats row */}
         <div className="flex flex-wrap justify-center gap-4 sm:gap-8 mt-8">
           {[
-            { label: "प्रदेश", en: "Provinces", value: "7" },
-            { label: "जिल्ला", en: "Districts", value: "77" },
-            { label: "क्षेत्र", en: "Constituencies", value: "165" },
+            { en: "Provinces", value: "7" },
+            { en: "Districts", value: "77" },
+            { en: "Constituencies", value: "165" },
           ].map((s) => (
-            <div key={s.label} className="text-center">
+            <div key={s.en} className="text-center">
               <p className="text-2xl sm:text-3xl font-heading font-bold text-white">{s.value}</p>
-              <p className="text-white/70 text-xs sm:text-sm">{s.label} · {s.en}</p>
+              <p className="text-white/70 text-xs sm:text-sm">{s.en}</p>
             </div>
           ))}
         </div>

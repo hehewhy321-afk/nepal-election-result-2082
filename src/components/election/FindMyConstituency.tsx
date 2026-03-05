@@ -18,33 +18,32 @@ const FindMyConstituency = ({ data, onSelectConstituency, onSelectCandidate }: P
 
     const filteredConsts = useMemo(() => {
         if (!district) return [];
-        const seen = new Map<number, string>();
+        const seen = new Map<string, string>();
         data
             .filter((c) => c.DistrictName === district)
             .forEach((c) => {
-                if (!seen.has(c.SCConstID)) seen.set(c.SCConstID, String(c.SCConstID));
+                const cid = String(c.SCConstID);
+                if (!seen.has(cid)) seen.set(cid, cid);
             });
-        return [...seen.entries()].sort((a, b) => a[0] - b[0]);
+        return [...seen.entries()].sort((a, b) => Number(a[0]) - Number(b[0]));
     }, [data, district]);
 
     // Leading candidate for selected constituency
     const leader = useMemo(() => {
-        if (!constId) return null;
-        const id = Number(constId);
+        if (!constId || !district) return null;
         const inConst = data
-            .filter((c) => c.SCConstID === id)
+            .filter((c) => String(c.SCConstID) === String(constId) && c.DistrictName === district)
             .sort((a, b) => (b.TotalVoteReceived || 0) - (a.TotalVoteReceived || 0));
         return inConst[0] || null;
-    }, [data, constId]);
+    }, [data, constId, district]);
 
     const second = useMemo(() => {
-        if (!constId) return null;
-        const id = Number(constId);
+        if (!constId || !district) return null;
         const inConst = data
-            .filter((c) => c.SCConstID === id)
+            .filter((c) => String(c.SCConstID) === String(constId) && c.DistrictName === district)
             .sort((a, b) => (b.TotalVoteReceived || 0) - (a.TotalVoteReceived || 0));
         return inConst[1] || null;
-    }, [data, constId]);
+    }, [data, constId, district]);
 
     const margin =
         leader && second
@@ -59,7 +58,7 @@ const FindMyConstituency = ({ data, onSelectConstituency, onSelectCandidate }: P
                 </div>
                 <div>
                     <h3 className="text-sm font-heading font-bold text-foreground leading-tight">
-                        आफ्नो क्षेत्र खोज्नुहोस् — Find My Constituency
+                        Find My Constituency
                     </h3>
                     <p className="text-[11px] text-muted-foreground">
                         Select your district and constituency to jump directly to results
@@ -73,7 +72,7 @@ const FindMyConstituency = ({ data, onSelectConstituency, onSelectCandidate }: P
                     onChange={(e) => { setDistrict(e.target.value); setConstId(""); }}
                     className="flex-1 px-3 py-2 rounded-lg border border-border/60 bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50"
                 >
-                    <option value="">Select district / जिल्ला छान्नुहोस्</option>
+                    <option value="">Select District</option>
                     {districts.map((d) => (
                         <option key={d} value={d}>{d}</option>
                     ))}
@@ -85,9 +84,9 @@ const FindMyConstituency = ({ data, onSelectConstituency, onSelectCandidate }: P
                     disabled={!district}
                     className="flex-1 px-3 py-2 rounded-lg border border-border/60 bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 disabled:opacity-40"
                 >
-                    <option value="">Select constituency / क्षेत्र छान्नुहोस्</option>
+                    <option value="">Select Area</option>
                     {filteredConsts.map(([id]) => (
-                        <option key={id} value={id}>Constituency / क्षेत्र {id}</option>
+                        <option key={id} value={id}>Area {id}</option>
                     ))}
                 </select>
             </div>
@@ -98,7 +97,7 @@ const FindMyConstituency = ({ data, onSelectConstituency, onSelectCandidate }: P
                     <div className="flex items-start justify-between gap-2">
                         <div>
                             <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">
-                                Leading / अग्रणी — Constituency {constId}, {district}
+                                Leading — Area {constId}, {district}
                             </p>
                             <p className="text-base font-heading font-bold text-foreground mt-0.5">
                                 {leader.CandidateName}
