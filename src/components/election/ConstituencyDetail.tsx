@@ -8,17 +8,17 @@ import { getPartyColor } from "@/lib/electionUtils";
 interface Props {
   data: Candidate[];
   constituencyId: number;
+  districtName: string;
   onClose: () => void;
 }
 
-const ConstituencyDetail = ({ data, constituencyId, onClose }: Props) => {
+const ConstituencyDetail = ({ data, constituencyId, districtName, onClose }: Props) => {
   const candidates = useMemo(() => {
     return data
-      .filter((c) => c.SCConstID === constituencyId)
+      .filter((c) => c.SCConstID === constituencyId && c.DistrictName === districtName)
       .sort((a, b) => (b.TotalVoteReceived || 0) - (a.TotalVoteReceived || 0));
-  }, [data, constituencyId]);
+  }, [data, constituencyId, districtName]);
 
-  const districtName = candidates[0]?.DistrictName || "";
   const stateName = candidates[0]?.StateName || "";
   const totalVotes = candidates.reduce((s, c) => s + (c.TotalVoteReceived || 0), 0);
 

@@ -15,7 +15,7 @@ interface ConstituencyInfo {
 
 interface Props {
   data: Candidate[];
-  onSelect: (id: number) => void;
+  onSelect: (constituency: { id: number; district: string }) => void;
 }
 
 const PAGE_SIZE = 18;
@@ -93,7 +93,7 @@ const ConstituencyList = ({ data, onSelect }: Props) => {
           {visible.map((c) => (
             <button
               key={`${c.district}-${c.id}`}
-              onClick={() => onSelect(c.id)}
+              onClick={() => onSelect({ id: c.id, district: c.district })}
               className="flex items-start gap-3 p-3.5 rounded-xl border border-border/70 bg-background text-left group hover:border-primary/30 hover:bg-primary/3 hover:-translate-y-0.5 transition-all duration-200"
             >
               {/* Icon */}

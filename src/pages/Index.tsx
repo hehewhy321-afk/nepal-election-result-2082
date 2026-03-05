@@ -43,7 +43,7 @@ const Index = () => {
   const [party, setParty] = useState("all");
 
   // Modal / detail state
-  const [selectedConstituency, setSelectedConstituency] = useState<number | null>(null);
+  const [selectedConstituency, setSelectedConstituency] = useState<{ id: number; district: string } | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
   const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt) : undefined;
@@ -287,7 +287,8 @@ const Index = () => {
       {selectedConstituency !== null && data && (
         <ConstituencyDetail
           data={data}
-          constituencyId={selectedConstituency}
+          constituencyId={selectedConstituency.id}
+          districtName={selectedConstituency.district}
           onClose={() => setSelectedConstituency(null)}
         />
       )}
