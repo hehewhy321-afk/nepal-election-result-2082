@@ -58,7 +58,7 @@ const ResultStatus = ({ data, isFetching, lastUpdated }: Props) => {
                     </p>
                     <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
                         {!hasAny
-                            ? "मतगणना सुरु भएको छैन। परिणाम २–३ दिनभित्र आउनेछ। • Counting not yet started. Results expected in 2–3 days."
+                            ? "मतगणना सुरु भएको छैन। परिणाम २–३ दिनभित्र आउनेछ। • Counting not yet started. Results expected in 24hrs."
                             : isPartial
                                 ? "मतगणना प्रक्रियामा छ। स्वतः अपडेट हुनेछ। • Counting in progress. Page auto-refreshes."
                                 : "सम्पूर्ण परिणाम उपलब्ध। • All results are in."}
