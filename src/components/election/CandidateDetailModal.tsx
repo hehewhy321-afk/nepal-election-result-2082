@@ -5,8 +5,7 @@ import {
     X, User, MapPin, Building2, GraduationCap, Briefcase,
     Users, Trophy, Clock, Hash, Stamp, TrendingUp,
 } from "lucide-react";
-import { getPartyColor } from "@/lib/electionUtils";
-import { getCandidatePhotoUrl } from "@/lib/candidateUtils";
+import { getPartyColor, getCandidateImageUrl, getSymbolImageUrl } from "@/lib/electionUtils";
 
 interface Props {
     candidate: Candidate | null;
@@ -29,7 +28,6 @@ const InfoRow = ({ icon, label, value }: { icon: React.ReactNode; label: string;
 };
 
 const CandidateDetailModal = ({ candidate, onClose }: Props) => {
-    const [imgError, setImgError] = useState(false);
     const { data } = useElectionData();
 
     const marginInfo = useMemo(() => {
@@ -107,7 +105,6 @@ const CandidateDetailModal = ({ candidate, onClose }: Props) => {
 
     const votes = candidate.TotalVoteReceived || 0;
     const color = getPartyColor(candidate.PoliticalPartyName, 0);
-    const photoUrl = getCandidatePhotoUrl(candidate.CandidateID);
 
     return (
         <>
@@ -125,22 +122,34 @@ const CandidateDetailModal = ({ candidate, onClose }: Props) => {
                     style={{ background: `linear-gradient(135deg, ${color}22, ${color}08)`, borderBottom: `2px solid ${color}40` }}
                 >
                     {/* Candidate photo or letter fallback */}
-                    {!imgError ? (
-                        <img
-                            src={photoUrl}
-                            alt={candidate.CandidateName}
-                            onError={() => setImgError(true)}
-                            className="w-14 h-14 rounded-full object-cover shadow-md border-2 flex-shrink-0"
-                            style={{ borderColor: `${color}50` }}
-                        />
-                    ) : (
+                    <div className="relative flex-shrink-0">
                         <div
-                            className="w-14 h-14 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-md flex-shrink-0"
-                            style={{ background: `linear-gradient(135deg, ${color}, ${color}99)` }}
+                            className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg border-2 bg-muted flex items-center justify-center"
+                            style={{ borderColor: `${color}40` }}
                         >
-                            {candidate.CandidateName.charAt(0)}
+                            <img
+                                src={getCandidateImageUrl(candidate.CandidateID)}
+                                alt={candidate.CandidateName}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    target.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-white text-xl font-bold" style="background: linear-gradient(135deg, ${color}, ${color}99)">${candidate.CandidateName.charAt(0)}</div>`;
+                                }}
+                            />
                         </div>
-                    )}
+                        {/* Symbol Badge */}
+                        {candidate.SymbolID && (
+                            <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-white shadow-md border border-border p-1.5 flex items-center justify-center z-10 ring-4 ring-background">
+                                <img
+                                    src={getSymbolImageUrl(candidate.SymbolID)}
+                                    alt={candidate.SymbolName}
+                                    className="w-full h-full object-contain"
+                                    onError={(e) => (e.target as HTMLImageElement).style.display = 'none'}
+                                />
+                            </div>
+                        )}
+                    </div>
                     <div className="min-w-0 flex-1">
                         <h2 className="text-base font-heading font-bold text-foreground truncate leading-tight">
                             {candidate.CandidateName}

@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import type { Candidate } from "@/types/election";
 import { Trophy, ChevronLeft, ChevronRight, Pause, Play, MapPin, Building2, Stamp, Users } from "lucide-react";
-import { getPartyColor } from "@/lib/electionUtils";
-import { getCandidatePhotoUrl } from "@/lib/candidateUtils";
+import { getPartyColor, getCandidateImageUrl, getSymbolImageUrl } from "@/lib/electionUtils";
 
 interface Props {
     data: Candidate[];
@@ -13,10 +12,9 @@ const SLIDE_INTERVAL = 5000; // ms
 
 /**
  * Picks one "featured" candidate per constituency – the one with the highest votes
- * (or a random one if no votes are in yet). Returns a shuffled subset.
  */
 function pickFeaturedCandidates(data: Candidate[]): Candidate[] {
-    const byConst = new Map<number, Candidate[]>();
+    const byConst = new Map<string, Candidate[]>();
     data.forEach((c) => {
         const arr = byConst.get(c.SCConstID) || [];
         arr.push(c);
@@ -44,16 +42,13 @@ const WinnerSlider = ({ data, onSelectCandidate }: Props) => {
     const slides = useMemo(() => pickFeaturedCandidates(data), [data]);
     const [idx, setIdx] = useState(0);
     const [playing, setPlaying] = useState(true);
-    const [imgError, setImgError] = useState(false);
 
     const prev = useCallback(() => {
         setIdx((i) => (i - 1 + slides.length) % slides.length);
-        setImgError(false);
     }, [slides.length]);
 
     const next = useCallback(() => {
         setIdx((i) => (i + 1) % slides.length);
-        setImgError(false);
     }, [slides.length]);
 
     useEffect(() => {
@@ -62,11 +57,6 @@ const WinnerSlider = ({ data, onSelectCandidate }: Props) => {
         return () => clearInterval(timer);
     }, [playing, next, slides.length]);
 
-    // Reset imgError whenever slide changes
-    useEffect(() => {
-        setImgError(false);
-    }, [idx]);
-
     if (slides.length === 0) return null;
 
     const c = slides[idx];
@@ -74,17 +64,14 @@ const WinnerSlider = ({ data, onSelectCandidate }: Props) => {
 
     // Calculate margin
     const constId = c.SCConstID;
-    const inConst = useMemo(() => {
-        return data
-            .filter((cand) => cand.SCConstID === constId)
-            .sort((a, b) => (b.TotalVoteReceived || 0) - (a.TotalVoteReceived || 0));
-    }, [data, constId]);
+    const inConst = data
+        .filter((cand) => cand.SCConstID === constId)
+        .sort((a, b) => (b.TotalVoteReceived || 0) - (a.TotalVoteReceived || 0));
 
     const secondPlace = inConst[1];
     const margin = (c.TotalVoteReceived || 0) - (secondPlace?.TotalVoteReceived || 0);
 
     const color = getPartyColor(c.PoliticalPartyName, idx);
-    const photoUrl = getCandidatePhotoUrl(c.CandidateID);
 
     return (
         <div
@@ -150,32 +137,39 @@ const WinnerSlider = ({ data, onSelectCandidate }: Props) => {
                 <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                     {/* Photo / Avatar */}
                     <div className="flex-shrink-0 relative">
-                        {!imgError ? (
+                        <div
+                            className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden shadow-lg border-2 bg-muted flex items-center justify-center p-0.5"
+                            style={{ borderColor: `${color}40` }}
+                        >
                             <img
-                                src={photoUrl}
+                                src={getCandidateImageUrl(c.CandidateID)}
                                 alt={c.CandidateName}
-                                onError={() => setImgError(true)}
-                                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shadow-lg border-2"
-                                style={{ borderColor: `${color}40` }}
-                            />
-                        ) : (
-                            <div
-                                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl flex items-center justify-center text-3xl font-heading font-bold text-white shadow-lg border-2"
-                                style={{
-                                    background: `linear-gradient(135deg, ${color}, ${color}99)`,
-                                    borderColor: `${color}40`,
+                                className="w-full h-full object-cover rounded-xl"
+                                onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    target.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-white text-3xl font-heading font-bold" style="background: linear-gradient(135deg, ${color}, ${color}99)">${c.CandidateName.charAt(0)}</div>`;
                                 }}
-                            >
-                                {c.CandidateName.charAt(0)}
-                            </div>
-                        )}
+                            />
+                        </div>
                         {/* Constituency badge */}
                         <div
-                            className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-sm"
+                            className="absolute -top-2 -left-2 px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-sm z-10"
                             style={{ background: color }}
                         >
                             #{c.SCConstID}
                         </div>
+                        {/* Symbol overlay */}
+                        {c.SymbolID && (
+                            <div className="absolute -bottom-2 -p-1 right-0 w-10 h-10 rounded-full bg-white shadow-md border border-border p-1.5 flex items-center justify-center z-10 ring-4 ring-background">
+                                <img
+                                    src={getSymbolImageUrl(c.SymbolID)}
+                                    alt={c.SymbolName}
+                                    className="w-full h-full object-contain"
+                                    onError={(e) => (e.target as HTMLImageElement).style.display = 'none'}
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* Info */}
@@ -257,7 +251,7 @@ const WinnerSlider = ({ data, onSelectCandidate }: Props) => {
                 {Array.from({ length: Math.min(slides.length, 12) }).map((_, i) => (
                     <button
                         key={i}
-                        onClick={() => { setIdx(i); setImgError(false); }}
+                        onClick={() => { setIdx(i); }}
                         className={`rounded-full transition-all duration-300 ${i === idx % Math.min(slides.length, 12)
                             ? "w-5 h-1.5"
                             : "w-1.5 h-1.5 opacity-40"

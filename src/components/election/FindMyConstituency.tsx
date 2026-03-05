@@ -4,7 +4,7 @@ import { MapPin, ChevronRight } from "lucide-react";
 
 interface Props {
     data: Candidate[];
-    onSelectConstituency: (constituency: { id: number; district: string }) => void;
+    onSelectConstituency: (constituency: { id: string; district: string }) => void;
     onSelectCandidate: (c: Candidate) => void;
 }
 
@@ -136,7 +136,7 @@ const FindMyConstituency = ({ data, onSelectConstituency, onSelectCandidate }: P
                             <ChevronRight className="w-3 h-3" />
                         </button>
                         <button
-                            onClick={() => onSelectConstituency({ id: Number(constId), district })}
+                            onClick={() => onSelectConstituency({ id: constId, district })}
                             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                         >
                             All candidates

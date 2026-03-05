@@ -9,11 +9,10 @@ export interface Candidate {
   DistrictName: string;
   StateName: string;
   STATE_ID: number;
-  SCConstID: number;
-  ConstName: number;
+  SCConstID: string;
+  SymbolID: number;
   TotalVoteReceived: number;
-  R: number;
-  E_STATUS: string | null;
+  Rank: string;
   QUALIFICATION: string;
   NAMEOFINST: string;
   EXPERIENCE: string;
@@ -22,7 +21,6 @@ export interface Candidate {
   FATHER_NAME: string;
   SPOUCE_NAME: string;
   DistrictCd: number;
-  Rank: string;
 }
 
 export interface PartyStats {

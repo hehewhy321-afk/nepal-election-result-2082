@@ -50,13 +50,24 @@ async function syncRaw() {
     try {
         const centralUrl = 'https://result.election.gov.np/Handlers/SecureJson.ashx?file=JSONFiles/ElectionResultCentral2082.txt';
         const res = await httpsGet(centralUrl, headers);
-        if (res.status === 200) {
-            const text = cleanString(res.data.toString('utf8'));
-            const data = JSON.parse(text);
+
+        // Fix: res in our httpsGet is { data, headers }, it doesn't have .status or .statusCode directly
+        if (res.data && res.data.length > 5000) {
+            const rawText = res.data.toString('utf8');
+            const cleanText = cleanString(rawText);
+            const data = JSON.parse(cleanText);
+
             if (Array.isArray(data) && data.length > 3000) {
+                // Check if this feed has real votes
+                const hasVotes = data.some(c => (c.TotalVoteReceived || 0) > 0);
+                if (!hasVotes) {
+                    console.log("Central feed found but has 0 votes. Checking if we should use it anyway...");
+                }
+
                 fs.writeFileSync(finalPath, JSON.stringify(data, null, 2), 'utf8');
                 console.log(`\nSUCCESS: Centralized Sync Complete.`);
                 console.log(`- Candidates Found: ${data.length}`);
+                console.log(`- Votes Detected: ${hasVotes ? 'Yes' : 'No'}`);
                 console.log(`- Database saved to ${finalPath}`);
                 return; // Goal achieved
             }

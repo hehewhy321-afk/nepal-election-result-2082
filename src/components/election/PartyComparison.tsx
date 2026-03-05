@@ -70,24 +70,24 @@ const PartyComparison = ({ data, parties }: Props) => {
   }, [selectedParties, data, allPartyStats]);
 
   const chartData = [
-    { metric: "कुल मत", ...Object.fromEntries(comparisonData.map((d, i) => [`party${i}`, d.totalVotes])) },
-    { metric: "उम्मेदवार", ...Object.fromEntries(comparisonData.map((d, i) => [`party${i}`, d.candidates])) },
-    { metric: "जिल्ला", ...Object.fromEntries(comparisonData.map((d, i) => [`party${i}`, d.districts])) },
-    { metric: "प्रदेश", ...Object.fromEntries(comparisonData.map((d, i) => [`party${i}`, d.provinces])) },
+    { metric: "Total Votes", ...Object.fromEntries(comparisonData.map((d, i) => [`party${i}`, d.totalVotes])) },
+    { metric: "Candidates", ...Object.fromEntries(comparisonData.map((d, i) => [`party${i}`, d.candidates])) },
+    { metric: "Districts", ...Object.fromEntries(comparisonData.map((d, i) => [`party${i}`, d.districts])) },
+    { metric: "Provinces", ...Object.fromEntries(comparisonData.map((d, i) => [`party${i}`, d.provinces])) },
   ];
 
   return (
     <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
       <div className="flex items-center gap-2 mb-1">
         <GitCompareArrows className="w-5 h-5 text-primary" />
-        <h3 className="text-lg font-heading font-bold text-card-foreground">पार्टी तुलना</h3>
+        <h3 className="text-lg font-heading font-bold text-card-foreground">Party Comparison</h3>
       </div>
       <p className="text-xs text-muted-foreground mb-4">Compare up to 5 parties side by side</p>
 
       <div className="flex flex-wrap gap-2 mb-4">
         <Select onValueChange={addParty} value="">
           <SelectTrigger className="w-[250px]">
-            <SelectValue placeholder="दल थप्नुहोस्..." />
+            <SelectValue placeholder="Add Party..." />
           </SelectTrigger>
           <SelectContent>
             {parties
@@ -120,12 +120,12 @@ const PartyComparison = ({ data, parties }: Props) => {
                 <div className="w-3 h-3 rounded-full mb-2" style={{ backgroundColor: COMPARE_COLORS[i] }} />
                 <p className="text-xs font-semibold truncate">{d.fullName}</p>
                 <p className="text-lg font-heading font-bold text-primary">{d.totalVotes.toLocaleString()}</p>
-                <p className="text-[10px] text-muted-foreground">मत</p>
+                <p className="text-[10px] text-muted-foreground">Votes</p>
                 <div className="mt-2 space-y-1 text-[11px] text-muted-foreground">
-                  <p>उम्मेदवार: {d.candidates}</p>
-                  <p>पुरुष/महिला: {d.male}/{d.female}</p>
-                  <p>औसत उमेर: {d.avgAge}</p>
-                  <p>जिल्ला: {d.districts} • प्रदेश: {d.provinces}</p>
+                  <p>Candidates: {d.candidates}</p>
+                  <p>Male/Female: {d.male}/{d.female}</p>
+                  <p>Avg Age: {d.avgAge}</p>
+                  <p>Districts: {d.districts} • Provinces: {d.provinces}</p>
                 </div>
               </div>
             ))}
@@ -155,8 +155,7 @@ const PartyComparison = ({ data, parties }: Props) => {
       {comparisonData.length < 2 && (
         <div className="text-center py-12 text-muted-foreground">
           <GitCompareArrows className="w-12 h-12 mx-auto mb-3 opacity-30" />
-          <p className="text-sm">कम्तिमा २ दल छान्नुहोस्</p>
-          <p className="text-xs">Select at least 2 parties to compare</p>
+          <p className="text-sm">Select at least 2 parties to compare</p>
         </div>
       )}
     </div>

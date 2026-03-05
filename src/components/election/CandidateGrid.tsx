@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Candidate } from "@/types/election";
-import { User, MapPin, Building2, Trophy, Clock, ChevronLeft, ChevronRight, Info, Stamp } from "lucide-react";
-import { getPartyColor } from "@/lib/electionUtils";
+import { User, MapPin, Building2, Trophy, Clock, ChevronLeft, ChevronRight, Info, Stamp, UserCircle } from "lucide-react";
+import { getPartyColor, getCandidateImageUrl, getSymbolImageUrl } from "@/lib/electionUtils";
 
 interface Props {
   data: Candidate[];
@@ -101,16 +101,29 @@ const CandidateGrid = ({ data, onSelectCandidate }: Props) => {
                   {/* Avatar with symbol tooltip */}
                   <div className="relative flex-shrink-0 group/avatar">
                     <div
-                      className="w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm"
-                      style={{ background: `linear-gradient(135deg, ${color}, ${color}99)` }}
+                      className="w-13 h-13 rounded-xl overflow-hidden shadow-sm bg-muted flex items-center justify-center border-2 border-background ring-1 ring-border/50"
                     >
-                      {c.CandidateName.charAt(0)}
+                      <img
+                        src={getCandidateImageUrl(c.CandidateID)}
+                        alt={c.CandidateName}
+                        className="w-full h-full object-cover transition-transform group-hover/avatar:scale-110"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          target.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-white text-base font-bold" style="background: linear-gradient(135deg, ${color}, ${color}99)">${c.CandidateName.charAt(0)}</div>`;
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/5 opacity-0 group-hover/avatar:opacity-100 transition-opacity" />
                     </div>
-                    {/* Symbol tooltip */}
-                    {c.SymbolName && (
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 rounded-lg bg-popover border border-border text-[10px] text-popover-foreground whitespace-nowrap shadow-lg opacity-0 group-hover/avatar:opacity-100 pointer-events-none transition-opacity z-10">
-                        <Stamp className="w-2.5 h-2.5 inline mr-1 text-muted-foreground" />
-                        {c.SymbolName}
+                    {/* Symbol overlay */}
+                    {c.SymbolID && (
+                      <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white shadow-md border border-border p-1 flex items-center justify-center overflow-hidden z-10 ring-2 ring-background">
+                        <img
+                          src={getSymbolImageUrl(c.SymbolID)}
+                          alt={c.SymbolName}
+                          className="w-full h-full object-contain"
+                          onError={(e) => (e.target as HTMLImageElement).style.display = 'none'}
+                        />
                       </div>
                     )}
                   </div>

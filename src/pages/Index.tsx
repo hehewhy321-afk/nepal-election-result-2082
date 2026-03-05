@@ -51,7 +51,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<TabType>("overview");
 
   // Modal / detail state
-  const [selectedConstituency, setSelectedConstituency] = useState<{ id: number; district: string } | null>(null);
+  const [selectedConstituency, setSelectedConstituency] = useState<{ id: string; district: string } | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
   const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt) : undefined;
@@ -131,7 +131,7 @@ const Index = () => {
               <Loader2 className="w-8 h-8 animate-spin text-white" />
             </div>
           </div>
-          <p className="text-lg font-heading font-bold text-foreground">डाटा लोड हुँदैछ...</p>
+          <p className="text-lg font-heading font-bold text-foreground">Loading Data...</p>
           <p className="text-sm text-muted-foreground mt-1">Loading election data from Election Commission Nepal</p>
         </div>
       </div>
@@ -241,7 +241,7 @@ const Index = () => {
         {/* ── Footer ── */}
         <footer className="text-center py-8 border-t border-border/50">
           <p className="text-sm text-muted-foreground">
-            Source / स्रोत: Election Commission Nepal · निर्वाचन आयोग नेपाल
+            Source: Election Commission Nepal
           </p>
           <p className="text-xs text-muted-foreground/60 mt-1">result.election.gov.np</p>
         </footer>

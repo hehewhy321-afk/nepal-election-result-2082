@@ -13,7 +13,7 @@
     "test:watch": "vitest",
     "prebuild": "node scripts/sync-data.cjs",
     "sync": "node scripts/sync-data.cjs",
-    "sync:watch": "node scripts/sync-data.cjs --watch"
+    "sync:live": "node scripts/sync-data.cjs --watch"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

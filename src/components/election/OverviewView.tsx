@@ -15,7 +15,7 @@ interface OverviewViewProps {
     provinceStats: ProvinceStats[];
     topCandidates: Candidate[];
     onSelectCandidate: (candidate: Candidate) => void;
-    onSelectConstituency: (constituency: { id: number; district: string }) => void;
+    onSelectConstituency: (constituency: { id: string; district: string }) => void;
 }
 
 const OverviewView = ({

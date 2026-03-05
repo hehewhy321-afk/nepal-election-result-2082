@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import type { Candidate } from "@/types/election";
-import { ChevronRight, ChevronLeft, ChevronRight as ChevRight, Trophy, Users, MapPin, Clock } from "lucide-react";
+import { ChevronRight, ChevronLeft, ChevronRight as ChevRight, Trophy, Users, MapPin, Clock, Stamp } from "lucide-react";
+import { getCandidateImageUrl } from "@/lib/electionUtils";
 
 interface ConstituencyInfo {
-  id: number;
+  id: string;
   district: string;
   province: string;
   candidates: number;
@@ -11,11 +12,12 @@ interface ConstituencyInfo {
   leader: string;
   leaderParty: string;
   leaderVotes: number;
+  leaderId: number;
 }
 
 interface Props {
   data: Candidate[];
-  onSelect: (constituency: { id: number; district: string }) => void;
+  onSelect: (constituency: { id: string; district: string }) => void;
 }
 
 const PAGE_SIZE = 18;
@@ -38,6 +40,7 @@ const ConstituencyList = ({ data, onSelect }: Props) => {
           leader: c.CandidateName,
           leaderParty: c.PoliticalPartyName,
           leaderVotes: c.TotalVoteReceived || 0,
+          leaderId: c.CandidateID,
         });
       } else {
         existing.candidates += 1;
@@ -46,6 +49,7 @@ const ConstituencyList = ({ data, onSelect }: Props) => {
           existing.leader = c.CandidateName;
           existing.leaderParty = c.PoliticalPartyName;
           existing.leaderVotes = c.TotalVoteReceived || 0;
+          existing.leaderId = c.CandidateID;
         }
         map.set(key, existing);
       }
@@ -53,7 +57,7 @@ const ConstituencyList = ({ data, onSelect }: Props) => {
     return Array.from(map.values()).sort((a, b) => {
       const distCmp = a.district.localeCompare(b.district);
       if (distCmp !== 0) return distCmp;
-      return a.id - b.id;
+      return a.id.localeCompare(b.id, undefined, { numeric: true });
     });
   }, [data]);
 
@@ -69,9 +73,9 @@ const ConstituencyList = ({ data, onSelect }: Props) => {
       {/* Header */}
       <div className="flex items-start justify-between mb-4 gap-3">
         <div>
-          <h3 className="text-lg font-heading font-bold text-card-foreground">निर्वाचन क्षेत्र</h3>
+          <h3 className="text-lg font-heading font-bold text-card-foreground">Constituency Explorer</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {constituencies.length} क्षेत्र • क्लिक गरी विस्तृत हेर्नुहोस् • Click to view details
+            {constituencies.length} Districts · Click to view constituency details
           </p>
         </div>
         {totalPages > 1 && (
@@ -85,8 +89,8 @@ const ConstituencyList = ({ data, onSelect }: Props) => {
       {visible.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <MapPin className="w-10 h-10 mx-auto mb-3 opacity-20" />
-          <p className="font-medium">कोही क्षेत्र भेटिएन</p>
-          <p className="text-xs mt-1">No constituencies found.</p>
+          <p className="font-medium">No constituencies found</p>
+          <p className="text-xs mt-1">Try adjusting your filters or checking back later.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
@@ -133,12 +137,12 @@ const ConstituencyList = ({ data, onSelect }: Props) => {
 
                 <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
                   <span className="flex items-center gap-0.5">
-                    <Users className="w-2.5 h-2.5" /> {c.candidates}
+                    <Users className="w-2.5 h-2.5" /> {c.candidates} Candidates
                   </span>
                   {c.totalVotes > 0 && (
                     <>
                       <span>•</span>
-                      <span>{c.totalVotes.toLocaleString()} मत</span>
+                      <span>{c.totalVotes.toLocaleString()} votes cast</span>
                     </>
                   )}
                 </div>
@@ -157,7 +161,7 @@ const ConstituencyList = ({ data, onSelect }: Props) => {
             className="flex items-center gap-1.5 px-3 h-8 rounded-lg border border-border/70 text-xs text-muted-foreground disabled:opacity-30 hover:border-primary/40 hover:text-primary transition-colors"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
-            अघिल्लो
+            Prev
           </button>
 
           <span className="text-xs text-muted-foreground">
@@ -169,7 +173,7 @@ const ConstituencyList = ({ data, onSelect }: Props) => {
             disabled={safePage === totalPages}
             className="flex items-center gap-1.5 px-3 h-8 rounded-lg border border-border/70 text-xs text-muted-foreground disabled:opacity-30 hover:border-primary/40 hover:text-primary transition-colors"
           >
-            अर्को
+            Next
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>

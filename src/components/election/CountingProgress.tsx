@@ -12,7 +12,7 @@ const CountingProgress = ({ data }: Props) => {
         data.filter((c) => (c.TotalVoteReceived || 0) > 0).map((c) => c.SCConstID)
     );
 
-    const totalConst = constituencies.size || TOTAL_CONSTITUENCIES;
+    const totalConst = TOTAL_CONSTITUENCIES;
     const countingCount = countingStarted.size;
     const pct = Math.round((countingCount / totalConst) * 100);
 

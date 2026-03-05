@@ -3,7 +3,7 @@ import type { Candidate } from "@/types/election";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { X, User, MapPin } from "lucide-react";
-import { getPartyColor } from "@/lib/electionUtils";
+import { getPartyColor, getCandidateImageUrl, getSymbolImageUrl } from "@/lib/electionUtils";
 
 interface Props {
   data: Candidate[];
@@ -87,8 +87,17 @@ const ConstituencyDetail = ({ data, constituencyId, districtName, onClose }: Pro
                     <TableCell className="font-bold text-muted-foreground">{i + 1}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full gradient-nepal flex items-center justify-center flex-shrink-0">
-                          <User className="w-3.5 h-3.5 text-primary-foreground" />
+                        <div className="w-9 h-9 rounded-lg overflow-hidden border bg-muted flex items-center justify-center flex-shrink-0 shadow-sm relative">
+                          <img
+                            src={getCandidateImageUrl(c.CandidateID)}
+                            alt={c.CandidateName}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              target.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-white text-[10px] font-bold" style="background: linear-gradient(135deg, ${getPartyColor(c.PoliticalPartyName, i)}, ${getPartyColor(c.PoliticalPartyName, i)}99)">${c.CandidateName.charAt(0)}</div>`;
+                            }}
+                          />
                         </div>
                         <div>
                           <p className="font-semibold text-sm">{c.CandidateName}</p>
@@ -97,7 +106,18 @@ const ConstituencyDetail = ({ data, constituencyId, districtName, onClose }: Pro
                       </div>
                     </TableCell>
                     <TableCell className="text-xs max-w-[150px] truncate">{c.PoliticalPartyName}</TableCell>
-                    <TableCell className="text-xs">{c.SymbolName}</TableCell>
+                    <TableCell className="text-center">
+                      {c.SymbolID && (
+                        <div className="w-8 h-8 mx-auto flex items-center justify-center bg-white rounded border border-border p-1">
+                          <img
+                            src={getSymbolImageUrl(c.SymbolID)}
+                            alt={c.SymbolName}
+                            className="w-full h-full object-contain"
+                            onError={(e) => (e.target as HTMLImageElement).style.display = 'none'}
+                          />
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell className="text-right font-heading font-bold text-primary">
                       {(c.TotalVoteReceived || 0).toLocaleString()}
                     </TableCell>

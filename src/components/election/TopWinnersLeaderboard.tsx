@@ -1,6 +1,6 @@
 import type { Candidate } from "@/types/election";
 import { Trophy, Medal } from "lucide-react";
-import { getPartyColor } from "@/lib/electionUtils";
+import { getPartyColor, getCandidateImageUrl } from "@/lib/electionUtils";
 import { useState } from "react";
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 
 function getLeaders(data: Candidate[]): Candidate[] {
     // One leader per constituency — the candidate with the highest votes
-    const byConst = new Map<number, Candidate>();
+    const byConst = new Map<string, Candidate>();
     data.forEach((c) => {
         const existing = byConst.get(c.SCConstID);
         if (!existing || (c.TotalVoteReceived || 0) > (existing.TotalVoteReceived || 0)) {
@@ -80,10 +80,23 @@ const TopWinnersLeaderboard = ({ data, onSelectCandidate }: Props) => {
                                         <RankIcon rank={rank} />
                                     </div>
 
-                                    <div
-                                        className="w-1 h-8 rounded-full flex-shrink-0"
-                                        style={{ background: color }}
-                                    />
+                                    <div className="relative flex-shrink-0">
+                                        <div
+                                            className="w-10 h-10 rounded-lg overflow-hidden border-2 bg-muted flex items-center justify-center p-0.5"
+                                            style={{ borderColor: `${color}40` }}
+                                        >
+                                            <img
+                                                src={getCandidateImageUrl(c.CandidateID)}
+                                                alt={c.CandidateName}
+                                                className="w-full h-full object-cover rounded-md"
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.style.display = 'none';
+                                                    target.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-white text-[10px] font-bold" style="background: linear-gradient(135deg, ${color}, ${color}99)">${c.CandidateName.charAt(0)}</div>`;
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
 
                                     <div className="min-w-0 flex-1">
                                         <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
