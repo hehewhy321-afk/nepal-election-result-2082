@@ -35,23 +35,26 @@ async function syncRaw() {
     // 1. Session Setup
     const sessionRes = await httpsGet('https://result.election.gov.np/', { 'User-Agent': userAgent });
     const cookies = sessionRes.headers['set-cookie'] || [];
-    const tokenCookie = cookies.find(c => c.startsWith('CsrfToken='));
-    const token = decodeURIComponent(tokenCookie.split('=')[1].split(';')[0]);
+
+    // We need both the ASP.NET_SessionId and potentially a CsrfToken to authenticate
+    const cookieString = cookies.map(c => c.split(';')[0]).join('; ');
+    const tokenCookie = cookies.find(c => c.startsWith('CsrfToken=')) || '';
+    const token = tokenCookie ? decodeURIComponent(tokenCookie.split('=')[1].split(';')[0]) : '';
+
     const headers = {
-        'X-CSRF-Token': token,
-        'Cookie': tokenCookie.split(';')[0],
-        'Referer': 'https://result.election.gov.np/ElectionResultCentral2082.aspx',
+        'Cookie': cookieString,
+        'Referer': 'https://result.election.gov.np/',
         'User-Agent': userAgent,
         'Accept': 'application/json, text/javascript, */*; q=0.01'
     };
+    if (token) headers['X-CSRF-Token'] = token;
 
     // 2. Try Centralized Feed First (Fastest)
-    console.log("Attempting Centralized Global Sync...");
+    console.log("Attempting Centralized Global Sync using SecureJson.ashx...");
     try {
-        const centralUrl = 'https://result.election.gov.np/Handlers/SecureJson.ashx?file=JSONFiles/ElectionResultCentral2082.txt';
+        const centralUrl = 'https://result.election.gov.np/Handlers/SecureJson.ashx?file=JSONFiles/Election2082/ElectionResultCentral2082.txt';
         const res = await httpsGet(centralUrl, headers);
 
-        // Fix: res in our httpsGet is { data, headers }, it doesn't have .status or .statusCode directly
         if (res.data && res.data.length > 5000) {
             const rawText = res.data.toString('utf8');
             const cleanText = cleanString(rawText);
