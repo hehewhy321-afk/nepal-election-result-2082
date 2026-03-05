@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
+    "prebuild": "node scripts/sync-data.cjs",
     "sync": "node scripts/sync-data.cjs",
     "sync:watch": "node scripts/sync-data.cjs --watch"
   },
