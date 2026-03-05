@@ -105,7 +105,7 @@ const ConstituencyList = ({ data, onSelect }: Props) => {
                 <div className="flex items-start justify-between gap-1">
                   <div className="min-w-0">
                     <p className="text-sm font-heading font-bold text-card-foreground truncate">
-                      {c.district}
+                      {c.district} - {c.id}
                     </p>
                     <p className="text-[11px] text-muted-foreground truncate flex items-center gap-0.5">
                       <MapPin className="w-2.5 h-2.5" /> {c.province}
