@@ -52,7 +52,7 @@ async function syncRaw() {
     // 2. Try Centralized Feed First (Fastest)
     console.log("Attempting Centralized Global Sync using SecureJson.ashx...");
     try {
-        const centralUrl = 'https://result.election.gov.np/Handlers/SecureJson.ashx?file=JSONFiles/Election2082/ElectionResultCentral2082.txt';
+        const centralUrl = 'https://result.election.gov.np/Handlers/SecureJson.ashx?file=JSONFiles/ElectionResultCentral2082.txt';
         const res = await httpsGet(centralUrl, headers);
 
         if (res.data && res.data.length > 5000) {
