@@ -27,6 +27,7 @@ export interface PartyStats {
   party: string;
   totalVotes: number;
   candidates: number;
+  seatsWon?: number;
   color: string;
 }
 

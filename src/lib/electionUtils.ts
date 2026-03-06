@@ -30,12 +30,23 @@ export function getPartyColor(party: string, index: number): string {
 }
 
 export function getPartyStats(data: Candidate[]): PartyStats[] {
-  const map = new Map<string, { totalVotes: number; candidates: number }>();
+  const map = new Map<string, { totalVotes: number; candidates: number; seatsWon: number }>();
+
+  // Calculate total votes and candidate counts
   data.forEach((c) => {
-    const existing = map.get(c.PoliticalPartyName) || { totalVotes: 0, candidates: 0 };
+    const existing = map.get(c.PoliticalPartyName) || { totalVotes: 0, candidates: 0, seatsWon: 0 };
     existing.totalVotes += c.TotalVoteReceived || 0;
     existing.candidates += 1;
     map.set(c.PoliticalPartyName, existing);
+  });
+
+  // Calculate unique seats won
+  const winners = getUniqueWinners(data);
+  winners.forEach((w) => {
+    const stats = map.get(w.PoliticalPartyName);
+    if (stats) {
+      stats.seatsWon += 1;
+    }
   });
 
   return Array.from(map.entries())

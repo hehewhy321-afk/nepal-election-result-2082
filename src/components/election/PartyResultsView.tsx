@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { motion } from "framer-motion";
 import type { Candidate } from "@/types/election";
 import { getPartyStats, getPartyColor } from "@/lib/electionUtils";
 import { Progress } from "@/components/ui/progress";
@@ -34,21 +35,75 @@ const PartyResultsView = ({ data, parties, districtStats }: PartyResultsViewProp
                 <div className="lg:col-span-2 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <PartyChart data={partyStats} />
-                        <div className="card-premium p-6 flex flex-col justify-center">
-                            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Quick Insights</h3>
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm">Total Parties</span>
-                                    <span className="font-bold">{partyCounts.length}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm">Main Contestants</span>
-                                    <span className="font-bold">{partyCounts.filter(p => p.count > 100).length}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm">Independents</span>
-                                    <span className="font-bold">{partyCounts.find(p => p.party.includes("स्वतन्त्र"))?.count || 0}</span>
-                                </div>
+                        <div className="card-premium p-6 flex flex-col">
+                            <h3 className="text-sm font-black text-primary/60 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                                Efficiency Metrics
+                            </h3>
+                            <div className="space-y-6">
+                                {useMemo(() => {
+                                    const topEfficiency = [...partyStats]
+                                        .filter(p => (p.seatsWon || 0) > 0 && p.totalVotes > 50000)
+                                        .sort((a, b) => (a.totalVotes / (a.seatsWon || 1)) - (b.totalVotes / (b.seatsWon || 1)))[0];
+
+                                    const topStrike = [...partyStats]
+                                        .filter(p => p.candidates > 10)
+                                        .sort((a, b) => ((b.seatsWon || 0) / b.candidates) - ((a.seatsWon || 0) / a.candidates))[0];
+
+                                    const totalCandidates = partyStats.reduce((acc, p) => acc + p.candidates, 0);
+                                    const totalVotes = partyStats.reduce((acc, p) => acc + p.totalVotes, 0);
+                                    const supportDensity = totalCandidates > 0 ? Math.round(totalVotes / totalCandidates) : 0;
+
+                                    return (
+                                        <>
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex justify-between items-end">
+                                                    <span className="text-[10px] font-black uppercase text-muted-foreground">Most Efficient</span>
+                                                    <span className="text-xs font-bold" style={{ color: topEfficiency?.color || 'var(--primary)' }}>
+                                                        {topEfficiency?.party || "N/A"}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between items-end bg-accent/20 p-2 rounded-lg mt-1 group hover:bg-accent/30 transition-colors">
+                                                    <span className="text-xs">Votes per Seat</span>
+                                                    <span className="font-mono font-black text-lg">
+                                                        {topEfficiency ? Math.round(topEfficiency.totalVotes / (topEfficiency.seatsWon || 1)).toLocaleString() : "0"}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex justify-between items-end">
+                                                    <span className="text-[10px] font-black uppercase text-muted-foreground">Highest Strike Rate</span>
+                                                    <span className="text-xs font-bold" style={{ color: topStrike?.color || 'var(--destructive)' }}>
+                                                        {topStrike?.party || "N/A"}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between items-end bg-accent/20 p-2 rounded-lg mt-1 group hover:bg-accent/30 transition-colors">
+                                                    <span className="text-xs">Winning %</span>
+                                                    <span className="font-mono font-black text-lg">
+                                                        {topStrike ? (((topStrike.seatsWon || 0) / topStrike.candidates) * 100).toFixed(1) : "0"}%
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-[10px] font-black uppercase text-muted-foreground">Voter Support Density</span>
+                                                <div className="flex justify-between items-end bg-accent/20 p-2 rounded-lg mt-1 group hover:bg-accent/30 transition-colors">
+                                                    <span className="text-xs">Avg Votes/Candidate</span>
+                                                    <span className="font-mono font-black text-lg">
+                                                        {supportDensity.toLocaleString()}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </>
+                                    );
+                                }, [partyStats])}
+                            </div>
+                            <div className="mt-auto pt-6 border-t border-border/40">
+                                <p className="text-[10px] leading-relaxed text-muted-foreground italic flex items-start gap-1.5">
+                                    <span className="shrink-0 w-3 h-3 rounded-full bg-accent/50 flex items-center justify-center text-[8px] not-italic font-bold">i</span>
+                                    Calculations based on major parties (&gt;50k total votes) to prioritize statistically significant insights.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -56,27 +111,50 @@ const PartyResultsView = ({ data, parties, districtStats }: PartyResultsViewProp
                 </div>
 
                 <div className="card-premium p-6 space-y-6 overflow-hidden">
-                    <div>
-                        <h3 className="font-heading font-bold text-lg mb-1">Party Candidates Count</h3>
-                        <p className="text-xs text-muted-foreground">Number of candidates fielded in all 165 constituencies</p>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h3 className="font-heading font-bold text-lg mb-1">Performance Index</h3>
+                            <p className="text-xs text-muted-foreground">Conversion of candidates to actual seats won</p>
+                        </div>
+                        <div className="bg-primary/10 px-2 py-1 rounded text-[10px] font-black text-primary">LIVE</div>
                     </div>
 
-                    <div className="space-y-5 h-[600px] overflow-y-auto pr-2 no-scrollbar">
-                        {partyCounts.map((p, idx) => (
-                            <div key={p.party} className="space-y-1.5">
-                                <div className="flex justify-between text-xs font-bold">
-                                    <span className="truncate max-w-[200px]">{p.party}</span>
-                                    <span>{p.count}</span>
+                    <div className="space-y-5 h-[650px] overflow-y-auto pr-2 no-scrollbar">
+                        {partyStats.map((p, idx) => (
+                            <div key={p.party} className="space-y-2 group">
+                                <div className="flex justify-between text-xs font-bold items-center">
+                                    <div className="flex items-center gap-2 truncate max-w-[180px]">
+                                        <div className="w-1 h-3 rounded-full" style={{ backgroundColor: p.color }} />
+                                        <span className="truncate">{p.party}</span>
+                                    </div>
+                                    <div className="flex gap-3 font-mono">
+                                        <span className="text-primary">{p.seatsWon || 0}W</span>
+                                        <span className="opacity-40">/</span>
+                                        <span className="text-muted-foreground">{p.candidates}F</span>
+                                    </div>
                                 </div>
-                                <Progress
-                                    value={(p.count / maxCount) * 100}
-                                    className="h-1.5"
-                                    style={{
-                                        backgroundColor: `${getPartyColor(p.party, idx)}15`,
-                                        // We can't easily set the indicator color via style on shadcn progress without custom implementation
-                                    }}
-                                // Using inline style for indicator if feasible or just standard theme
-                                />
+                                <div className="relative h-1.5 w-full bg-accent/20 rounded-full overflow-hidden">
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${(p.candidates / Math.max(...partyStats.map(ps => ps.candidates))) * 100}%` }}
+                                        className="absolute left-0 top-0 h-full opacity-30"
+                                        style={{ backgroundColor: p.color }}
+                                    />
+                                    {p.seatsWon && p.seatsWon > 0 && (
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${((p.seatsWon || 0) / p.candidates) * 100}%` }}
+                                            className="absolute left-0 top-0 h-full shadow-[0_0_10px_rgba(var(--primary-rgb),0.5)]"
+                                            style={{ backgroundColor: p.color }}
+                                        />
+                                    )}
+                                </div>
+                                {p.seatsWon && p.seatsWon > 0 && (
+                                    <div className="flex justify-between text-[9px] uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="text-muted-foreground text-[10px]">Strike Rate</span>
+                                        <span className="font-black" style={{ color: p.color }}>{(((p.seatsWon || 0) / p.candidates) * 100).toFixed(1)}%</span>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
