@@ -1,6 +1,8 @@
 import { LayoutDashboard, Users, Trophy, Vote, Search, Map, Percent } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import AudioPlayer from "./AudioPlayer";
+
 export type TabType = "overview" | "party" | "parliament" | "candidates" | "winners" | "search" | "provinces" | "pr";
 
 interface DashboardNavProps {
@@ -41,6 +43,9 @@ const DashboardNav = ({ activeTab, onTabChange }: DashboardNavProps) => {
                         </button>
                     );
                 })}
+                <div className="ml-auto pl-2 border-l border-border/50 flex items-center">
+                    <AudioPlayer />
+                </div>
             </div>
         </div>
     );
