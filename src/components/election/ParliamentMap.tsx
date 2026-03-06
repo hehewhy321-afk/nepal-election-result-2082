@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { getParliamentSeats } from "@/lib/electionUtils";
+import { getParliamentSeats, getCandidateImageUrl } from "@/lib/electionUtils";
 import type { Candidate } from "@/types/election";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -78,7 +78,10 @@ const ParliamentMap = ({ data }: ParliamentMapProps) => {
                     </div>
                     <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-wider">
                         <div className="flex items-center gap-1.5">
-                            <span className="w-2.5 h-2.5 rounded-full bg-primary" />
+                            <span
+                                className="w-2.5 h-2.5 rounded-full shadow-sm transition-colors duration-500"
+                                style={{ backgroundColor: partyStats[0]?.[1]?.color || "var(--primary)" }}
+                            />
                             <span className="text-muted-foreground">Won / Leading</span>
                         </div>
                         <div className="flex items-center gap-1.5">
@@ -113,7 +116,8 @@ const ParliamentMap = ({ data }: ParliamentMapProps) => {
                                         }}
                                     >
                                         <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-                                            <path d="M7 11V7a5 5 0 0 1 10 0v4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h1zM9 7v4h6V7a3 3 0 0 0-6 0z" />
+                                            {/* Refined Chair SVG - Sleek Front-Facing Parliamentary Chair */}
+                                            <path d="M17 7c0-2-1.5-3-5-3S7 5 7 7v4h10V7zM6 12h12l1 5H5l1-5zM8 17l-1 3.5h1.5l1-3.5M16 17l1 3.5h-1.5l-1-3.5" />
                                         </svg>
                                     </button>
                                 </TooltipTrigger>
@@ -123,16 +127,32 @@ const ParliamentMap = ({ data }: ParliamentMapProps) => {
                                             {seat.district} - Area {seat.constituency}
                                         </p>
                                         {seat.leaderVotes > 0 ? (
-                                            <>
-                                                <p className="font-heading font-bold text-sm leading-tight text-primary">
-                                                    {seat.leaderName}
-                                                </p>
-                                                <p className="text-[11px] font-semibold text-foreground/80">{seat.leaderParty}</p>
-                                                <div className="pt-1.5 mt-1 border-t border-border/40 flex justify-between items-center">
-                                                    <span className="text-[9px] font-black text-muted-foreground uppercase">Votes Received</span>
-                                                    <span className="text-xs font-black tabular-nums">{seat.leaderVotes.toLocaleString()}</span>
+                                            <div className="flex gap-3 items-start animate-in fade-in slide-in-from-top-2 duration-300">
+                                                {seat.leaderId && (
+                                                    <div className="relative shrink-0">
+                                                        <img
+                                                            src={getCandidateImageUrl(seat.leaderId)}
+                                                            alt={seat.leaderName}
+                                                            className="w-12 h-12 rounded-full object-cover border-2 border-primary/20 bg-muted shadow-sm"
+                                                            onError={(e) => (e.currentTarget.style.display = "none")}
+                                                        />
+                                                        <div
+                                                            className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-background"
+                                                            style={{ backgroundColor: seat.color }}
+                                                        />
+                                                    </div>
+                                                )}
+                                                <div className="space-y-1 py-0.5">
+                                                    <p className="font-heading font-bold text-sm leading-tight text-primary">
+                                                        {seat.leaderName}
+                                                    </p>
+                                                    <p className="text-[11px] font-semibold text-foreground/80">{seat.leaderParty}</p>
+                                                    <div className="pt-1.5 mt-1 border-t border-border/40 flex justify-between items-center gap-4">
+                                                        <span className="text-[9px] font-black text-muted-foreground uppercase whitespace-nowrap">Votes Received</span>
+                                                        <span className="text-xs font-black tabular-nums">{seat.leaderVotes.toLocaleString()}</span>
+                                                    </div>
                                                 </div>
-                                            </>
+                                            </div>
                                         ) : (
                                             <div className="flex items-center gap-2 py-1">
                                                 <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />

@@ -7,6 +7,7 @@ import TopWinnersLeaderboard from "./TopWinnersLeaderboard";
 import PartyChart from "./PartyChart";
 import ProvinceChart from "./ProvinceChart";
 import CandidateGrid from "./CandidateGrid";
+import { MainFaces } from "./MainFaces";
 
 interface OverviewViewProps {
     data: Candidate[];
@@ -43,6 +44,8 @@ const OverviewView = ({
             {data && data.length > 0 && (
                 <WinnerSlider data={filteredData.length > 0 ? filteredData : data} onSelectCandidate={onSelectCandidate} />
             )}
+
+            <MainFaces data={data || []} />
 
             <TopWinnersLeaderboard data={data || []} onSelectCandidate={onSelectCandidate} />
 

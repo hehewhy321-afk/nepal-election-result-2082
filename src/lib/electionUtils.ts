@@ -107,6 +107,7 @@ export function getParliamentSeats(data: Candidate[]) {
       id,
       district: leader.DistrictName,
       constituency: String(leader.SCConstID),
+      leaderId: leaderVotes > 0 ? leader.CandidateID : null,
       leaderName: leaderVotes > 0 ? leader.CandidateName : null,
       leaderParty: leaderVotes > 0 ? leader.PoliticalPartyName : null,
       leaderVotes,
@@ -145,4 +146,40 @@ export function getUniqueWinners(data: Candidate[]): Candidate[] {
   });
 
   return winners;
+}
+export function getTopCandidatesByConstituency(
+  data: Candidate[],
+  districtCd: number,
+  constId: number | string,
+  limit = 3
+): Candidate[] {
+  return data
+    .filter(
+      (c) =>
+        Number(c.DistrictCd) === districtCd && String(c.SCConstID) === String(constId)
+    )
+    .sort((a, b) => (b.TotalVoteReceived || 0) - (a.TotalVoteReceived || 0))
+    .slice(0, limit);
+}
+
+export function getConstituencyOptions(data: Candidate[]) {
+  const districtsMap = new Map<number, string>();
+  const constsMap = new Map<string, { districtCd: number; constId: string; label: string }>();
+
+  data.forEach((c) => {
+    districtsMap.set(Number(c.DistrictCd), c.DistrictName);
+    const key = `${c.DistrictCd}-${c.SCConstID}`;
+    if (!constsMap.has(key)) {
+      constsMap.set(key, {
+        districtCd: Number(c.DistrictCd),
+        constId: String(c.SCConstID),
+        label: `${c.DistrictName}-${c.SCConstID}`,
+      });
+    }
+  });
+
+  return {
+    districts: Array.from(districtsMap.entries()).map(([id, name]) => ({ id, name })),
+    constituencies: Array.from(constsMap.values()),
+  };
 }
