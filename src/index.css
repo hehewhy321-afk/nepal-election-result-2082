@@ -188,15 +188,16 @@
 
 @layer utilities {
 
-  /* ---- Nepal Gradients ---- */
+  /* ---- Premium Muted Gradients ---- */
   .gradient-nepal {
-    background: linear-gradient(135deg, hsl(350 80% 42%), hsl(220 65% 28%));
+    background: linear-gradient(135deg, hsl(348 60% 45%), hsl(222 40% 30%));
   }
 
   .gradient-nepal-animated {
-    background: linear-gradient(270deg, hsl(350 80% 42%), hsl(220 65% 28%), hsl(42 92% 52%), hsl(152 52% 38%));
+    /* Soft, slate-blue base interwoven with subtle crimson and muted teal */
+    background: linear-gradient(-45deg, hsl(222 47% 12%), hsl(220 30% 25%), hsl(348 40% 25%), hsl(210 50% 15%));
     background-size: 400% 400%;
-    animation: gradient-shift 8s ease infinite;
+    animation: gradient-shift 15s ease infinite;
   }
 
   .gradient-nepal-light {
@@ -213,7 +214,7 @@
 
   /* ---- Text Effects ---- */
   .text-gradient-nepal {
-    background: linear-gradient(135deg, hsl(350 80% 42%), hsl(220 65% 28%));
+    background: linear-gradient(135deg, hsl(348 60% 50%), hsl(222 50% 60%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -221,16 +222,16 @@
 
   .text-gradient-shimmer {
     background: linear-gradient(90deg,
-        hsl(350 80% 75%) 0%,
+        hsl(220 20% 80%) 0%,
         hsl(0 0% 100%) 30%,
-        hsl(42 92% 80%) 50%,
+        hsl(348 40% 80%) 50%,
         hsl(0 0% 100%) 70%,
-        hsl(350 80% 75%) 100%);
+        hsl(220 20% 80%) 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: shimmer 4s linear infinite;
+    animation: shimmer 6s linear infinite;
   }
 
   /* ---- Glassmorphism ---- */

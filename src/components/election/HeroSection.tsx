@@ -1,63 +1,107 @@
+import { Activity, Map, Users, ChevronDown } from "lucide-react";
+
+/**
+ * A highly modern, cinematic centered Hero Section.
+ * Completely symmetrical, featuring a massive typography stack, 
+ * subtle top-illumination, and a sleek floating glassmorphic stat bar.
+ */
 const HeroSection = () => {
   return (
-    <div className="relative overflow-hidden min-h-[320px] sm:min-h-[380px] flex items-center">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 gradient-nepal-animated" />
+    <div className="relative overflow-hidden min-h-[500px] flex flex-col items-center justify-center border-b border-border/50 bg-background pt-24 pb-16">
 
-      {/* Pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-10"
-        style={{
-          backgroundImage: `radial-gradient(circle at 25% 25%, white 1px, transparent 1px),
-                            radial-gradient(circle at 75% 75%, white 1px, transparent 1px)`,
-          backgroundSize: "40px 40px",
-        }}
-      />
+      {/* Background Ambience */}
+      <div className="absolute inset-0 z-0">
+        {/* Subtle radial top glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] sm:w-[800px] sm:h-[400px] bg-primary/10 rounded-full blur-[100px] opacity-70 pointer-events-none" />
 
-      {/* Glow orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-white/8 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
+        {/* Very subtle grid pattern fading out linearly downwards */}
+        <div
+          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+            backgroundSize: "3rem 3rem",
+            maskImage: "linear-gradient(to bottom, black 10%, transparent 80%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 10%, transparent 80%)",
+          }}
+        />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 py-12 sm:py-16 text-center">
-        {/* Live badge */}
-        <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-4 py-1.5 mb-6">
-          <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-          <span className="text-white text-xs sm:text-sm font-semibold tracking-wide">
-            🇳🇵 Election 2082
+      {/* Main Content */}
+      <div className="relative z-10 container mx-auto px-4 flex flex-col items-center text-center">
+
+        {/* Live Badge */}
+        <div className="inline-flex items-center gap-2.5 bg-card/40 backdrop-blur-md border border-border/60 rounded-full px-4 py-1.5 mb-8 hover:bg-card/60 transition-colors shadow-sm cursor-default">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full w-2 h-2 bg-red-500"></span>
+          </span>
+          <span className="text-foreground text-[11px] sm:text-xs font-semibold tracking-widest uppercase">
+            Live Election Counting
           </span>
         </div>
 
         {/* Title */}
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-heading font-bold text-white mb-3 tracking-tight leading-tight">
-          <span className="text-gradient-shimmer">Nepal Election Results</span>
+        <h1 className="text-5xl sm:text-7xl lg:text-[5rem] font-heading font-black text-foreground tracking-tighter leading-[1.05] mb-6 max-w-4xl mx-auto">
+          House of Representatives <br />
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+            Elections 2082
+          </span>
         </h1>
-        <p className="text-base sm:text-xl text-white/80 font-medium mb-2">
-          Nepal Election Results Portal 2082
-        </p>
-        <p className="text-xs sm:text-sm text-white/60 max-w-xl mx-auto">
-          Real-time updates and analysis of the 2082 House of Representatives counting progress.
+
+        {/* Subtitle */}
+        <p className="text-lg sm:text-xl text-muted-foreground font-medium max-w-2xl mx-auto mb-14 leading-relaxed">
+          The official real-time dashboard for tracking nationwide democratic outcomes, detailed constituency mapping, and parliamentary composition.
         </p>
 
-        {/* Quick stats row */}
-        <div className="flex flex-wrap justify-center gap-4 sm:gap-8 mt-8">
-          {[
-            { en: "Provinces", value: "7" },
-            { en: "Districts", value: "77" },
-            { en: "Constituencies", value: "165" },
-          ].map((s) => (
-            <div key={s.en} className="text-center">
-              <p className="text-2xl sm:text-3xl font-heading font-bold text-white">{s.value}</p>
-              <p className="text-white/70 text-xs sm:text-sm">{s.en}</p>
+        {/* Stats Bar (Floating Pill) */}
+        <div className="flex flex-col sm:flex-row items-center gap-8 sm:gap-12 bg-card/50 backdrop-blur-xl border border-border/60 rounded-3xl sm:rounded-full px-8 sm:px-14 py-6 sm:py-5 shadow-2xl shadow-black/5 hover:border-primary/20 transition-colors duration-500">
+
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-blue-500/10 text-blue-500 rounded-full">
+              <Activity className="w-5 h-5" />
             </div>
-          ))}
-        </div>
-      </div>
+            <div className="text-left">
+              <p className="text-2xl font-black font-heading text-foreground leading-none">7</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-1">Provinces</p>
+            </div>
+          </div>
 
-      {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background to-transparent" />
+          <div className="hidden sm:block w-px h-10 bg-border/60" />
+
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-full">
+              <Map className="w-5 h-5" />
+            </div>
+            <div className="text-left">
+              <p className="text-2xl font-black font-heading text-foreground leading-none">77</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-1">Districts</p>
+            </div>
+          </div>
+
+          <div className="hidden sm:block w-px h-10 bg-border/60" />
+
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-primary/10 text-primary rounded-full ring-2 ring-primary/20 ring-offset-2 ring-offset-background/50">
+              <Users className="w-5 h-5" />
+            </div>
+            <div className="text-left">
+              <p className="text-2xl font-black font-heading text-foreground leading-none">165</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-1">Total Seats</p>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Scroll Indicator */}
+        <button
+          onClick={() => window.scrollTo({ top: document.getElementById("counting-progress")?.offsetTop || 800, behavior: "smooth" })}
+          className="mt-16 text-muted-foreground hover:text-foreground transition-colors group flex flex-col items-center gap-2"
+        >
+          <span className="text-[10px] uppercase font-bold tracking-widest opacity-70 group-hover:opacity-100 transition-opacity">Scroll to Results</span>
+          <ChevronDown className="w-4 h-4 animate-bounce opacity-70 group-hover:opacity-100 transition-opacity" />
+        </button>
+
+      </div>
     </div>
   );
 };
