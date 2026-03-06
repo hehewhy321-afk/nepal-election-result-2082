@@ -29,4 +29,8 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git add public/data/election-results-2082.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update election results" && git push)
+          if ! git diff --staged --quiet; then
+            git commit -m "jholey: update election results"
+            git pull --rebase origin main
+            git push
+          fi
