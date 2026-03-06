@@ -3,6 +3,7 @@ import type { Candidate } from "@/types/election";
 import { Trophy, Clock, Medal, Users } from "lucide-react";
 import CandidateGrid from "./CandidateGrid";
 import { Progress } from "@/components/ui/progress";
+import { getUniqueWinners } from "@/lib/electionUtils";
 
 interface WinnersGalleryProps {
     data: Candidate[];
@@ -10,9 +11,7 @@ interface WinnersGalleryProps {
 }
 
 const WinnersGallery = ({ data, onSelectCandidate }: WinnersGalleryProps) => {
-    const winners = useMemo(() => {
-        return data.filter(c => c.Rank === "1" && c.TotalVoteReceived > 0);
-    }, [data]);
+    const winners = useMemo(() => getUniqueWinners(data), [data]);
 
     const totalSeats = 165;
     const progress = (winners.length / totalSeats) * 100;

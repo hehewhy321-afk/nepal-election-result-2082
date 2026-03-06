@@ -7,9 +7,11 @@ interface Props {
 const TOTAL_CONSTITUENCIES = 165;
 
 const CountingProgress = ({ data }: Props) => {
-    const constituencies = new Set(data.map((c) => c.SCConstID));
+    // Unique constituencies where counting has started nationwide
     const countingStarted = new Set(
-        data.filter((c) => (c.TotalVoteReceived || 0) > 0).map((c) => c.SCConstID)
+        data
+            .filter((c) => (c.TotalVoteReceived || 0) > 0)
+            .map((c) => `${c.DistrictCd}-${c.SCConstID}`)
     );
 
     const totalConst = TOTAL_CONSTITUENCIES;

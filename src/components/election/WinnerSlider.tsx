@@ -16,9 +16,10 @@ const SLIDE_INTERVAL = 5000; // ms
 function pickFeaturedCandidates(data: Candidate[]): Candidate[] {
     const byConst = new Map<string, Candidate[]>();
     data.forEach((c) => {
-        const arr = byConst.get(c.SCConstID) || [];
+        const key = `${c.DistrictCd}-${c.SCConstID}`;
+        const arr = byConst.get(key) || [];
         arr.push(c);
-        byConst.set(c.SCConstID, arr);
+        byConst.set(key, arr);
     });
 
     const featured: Candidate[] = [];
@@ -63,9 +64,9 @@ const WinnerSlider = ({ data, onSelectCandidate }: Props) => {
     const votes = c.TotalVoteReceived || 0;
 
     // Calculate margin
-    const constId = c.SCConstID;
+    const constKey = `${c.DistrictCd}-${c.SCConstID}`;
     const inConst = data
-        .filter((cand) => cand.SCConstID === constId)
+        .filter((cand) => `${cand.DistrictCd}-${cand.SCConstID}` === constKey)
         .sort((a, b) => (b.TotalVoteReceived || 0) - (a.TotalVoteReceived || 0));
 
     const secondPlace = inConst[1];

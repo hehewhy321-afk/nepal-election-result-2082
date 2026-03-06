@@ -116,3 +116,33 @@ export function getParliamentSeats(data: Candidate[]) {
     };
   });
 }
+
+/**
+ * Returns exactly one unique winner per constituency by deduplicating 
+ * any redundant "Rank 1" entries from the raw data feed.
+ */
+export function getUniqueWinners(data: Candidate[]): Candidate[] {
+  const byConstituency = new Map<string, Candidate[]>();
+
+  // Group by unique constituency identifier
+  data.forEach((c) => {
+    if (c.Rank === "1" && (c.TotalVoteReceived || 0) > 0) {
+      const key = `${c.DistrictCd}-${c.SCConstID}`;
+      const existing = byConstituency.get(key) || [];
+      existing.push(c);
+      byConstituency.set(key, existing);
+    }
+  });
+
+  const winners: Candidate[] = [];
+
+  // Extract strictly the single highest voted candidate per constituency group
+  byConstituency.forEach((candidates) => {
+    const sorted = [...candidates].sort((a, b) => (b.TotalVoteReceived || 0) - (a.TotalVoteReceived || 0));
+    if (sorted.length > 0) {
+      winners.push(sorted[0]);
+    }
+  });
+
+  return winners;
+}
