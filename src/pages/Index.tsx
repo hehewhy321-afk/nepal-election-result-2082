@@ -1,14 +1,11 @@
 import { useState, useMemo } from "react";
 import { useElectionData } from "@/hooks/useElectionData";
-import { getPartyStats, getProvinceStats, getGenderStats, getTopCandidates, getDistrictStats } from "@/lib/electionUtils";
+import { getPartyStats, getProvinceStats, getTopCandidates, getDistrictStats } from "@/lib/electionUtils";
 import type { Candidate } from "@/types/election";
 import HeroSection from "@/components/election/HeroSection";
 import StatsCards from "@/components/election/StatsCards";
 import PartyChart from "@/components/election/PartyChart";
 import ProvinceChart from "@/components/election/ProvinceChart";
-import GenderPieChart from "@/components/election/GenderPieChart";
-import AgeDistributionChart from "@/components/election/AgeDistributionChart";
-import TopCandidatesTable from "@/components/election/TopCandidatesTable";
 import DistrictTable from "@/components/election/DistrictTable";
 import SearchFilter from "@/components/election/SearchFilter";
 import CandidateGrid from "@/components/election/CandidateGrid";
@@ -20,7 +17,6 @@ import WinnerSlider from "@/components/election/WinnerSlider";
 import CountingProgress from "@/components/election/CountingProgress";
 import FindMyConstituency from "@/components/election/FindMyConstituency";
 import GenderByProvinceChart from "@/components/election/GenderByProvinceChart";
-import DemographicsCharts from "@/components/election/DemographicsCharts";
 import TopWinnersLeaderboard from "@/components/election/TopWinnersLeaderboard";
 import CSVExportButton from "@/components/election/CSVExportButton";
 import ResultStatus from "@/components/election/ResultStatus";
@@ -30,6 +26,7 @@ import ParliamentMap from "@/components/election/ParliamentMap";
 import PartyResultsView from "@/components/election/PartyResultsView";
 import CandidatesView from "@/components/election/CandidatesView";
 import WinnersGallery from "@/components/election/WinnersGallery";
+import PRSimulatorView from "@/components/election/PRSimulatorView";
 import { Loader2, Trophy } from "lucide-react";
 
 const REFRESH_INTERVAL = 60; // seconds
@@ -116,7 +113,6 @@ const Index = () => {
   // ── Statistics ────────────────────────────────────────────────────
   const partyStats = useMemo(() => getPartyStats(filteredData), [filteredData]);
   const provinceStats = useMemo(() => getProvinceStats(filteredData), [filteredData]);
-  const genderStats = useMemo(() => getGenderStats(filteredData), [filteredData]);
   const topCandidates = useMemo(() => getTopCandidates(filteredData), [filteredData]);
   const districtStats = useMemo(() => getDistrictStats(filteredData), [filteredData]);
 
@@ -190,6 +186,10 @@ const Index = () => {
 
         {activeTab === "party" && (
           <PartyResultsView data={data || []} parties={parties} districtStats={districtStats} />
+        )}
+
+        {activeTab === "pr" && (
+          <PRSimulatorView partyStats={partyStats} />
         )}
 
         {activeTab === "candidates" && (

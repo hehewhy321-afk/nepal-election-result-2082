@@ -129,6 +129,34 @@ export function getParliamentSeats(data: Candidate[]) {
   });
 }
 
+export function getCombinedParliamentSeats(data: Candidate[], prAllocations: any[]) {
+  const fptpSeats = getParliamentSeats(data);
+  const totalFptp = fptpSeats.length; // 165
+
+  // Map PR allocations to seats
+  const prSeats: any[] = [];
+  prAllocations.forEach(p => {
+    for (let i = 0; i < p.assignedSeats; i++) {
+      prSeats.push({
+        id: `pr-${p.party}-${i}`,
+        district: "Proportional Representation",
+        constituency: "National List",
+        leaderId: null,
+        leaderName: p.party,
+        leaderParty: p.party,
+        leaderVotes: 0,
+        totalVotes: 0,
+        isWon: true,
+        isPR: true,
+        color: p.color
+      });
+    }
+  });
+
+  // Combine them: 165 FPTP + 110 PR = 275
+  return [...fptpSeats, ...prSeats];
+}
+
 /**
  * Returns exactly one unique winner per constituency by deduplicating 
  * any redundant "Rank 1" entries from the raw data feed.

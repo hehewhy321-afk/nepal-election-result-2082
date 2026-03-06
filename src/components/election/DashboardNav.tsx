@@ -14,6 +14,7 @@ const tabs = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "party", label: "Party Results", icon: Vote },
     { id: "parliament", label: "Parliament", icon: Map },
+    { id: "pr", label: "PR Votes", icon: Percent },
     { id: "candidates", label: "Candidates", icon: Users },
     { id: "winners", label: "Winners", icon: Trophy },
     { id: "search", label: "Search", icon: Search },
