@@ -244,7 +244,7 @@ const Index = () => {
             Source: Election Commission Nepal
           </p>
           <p className="text-xs text-muted-foreground/60 mt-1">result.election.gov.np</p>
-          <p className="text-xs text-muted-foreground/60 mt-1">Developed by: <a href="/https://github.com/hehewhy321-afk">Saif Ali</a></p>
+          <p className="text-xs text-muted-foreground/60 mt-1">Developed by: <a href="https://github.com/hehewhy321-afk">Saif Ali</a></p>
         </footer>
       </div>
 

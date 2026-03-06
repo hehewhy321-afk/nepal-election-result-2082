@@ -1,10 +1,10 @@
 import type { Candidate, PartyStats, ProvinceStats, GenderStats } from "@/types/election";
 
 export const getCandidateImageUrl = (candidateId: number) =>
-  `https://result.election.gov.np/Images/Candidate/${candidateId}.jpg`;
+  `/election-api/Images/Candidate/${candidateId}.jpg`;
 
 export const getSymbolImageUrl = (symbolId: number) =>
-  `https://result.election.gov.np/Images/symbol-hor-pa/${symbolId}.jpg`;
+  `/election-api/Images/symbol-hor-pa/${symbolId}.jpg`;
 
 const PARTY_COLORS: Record<string, string> = {
   "नेपाली काँग्रेस": "#E74C3C",

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import type { Candidate } from "@/types/election";
 import { getPartyStats, getPartyColor } from "@/lib/electionUtils";
@@ -6,6 +6,11 @@ import { Progress } from "@/components/ui/progress";
 import PartyChart from "./PartyChart";
 import PartyComparison from "./PartyComparison";
 import DistrictTable from "./DistrictTable";
+import { toPng } from "html-to-image";
+import { ShareCard } from "./ShareCard";
+import { Share2, Clock, Check } from "lucide-react";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface PartyResultsViewProps {
     data: Candidate[];
@@ -28,6 +33,58 @@ const PartyResultsView = ({ data, parties, districtStats }: PartyResultsViewProp
     }, [data]);
 
     const maxCount = Math.max(...partyCounts.map(p => p.count));
+
+    const [sharingParty, setSharingParty] = useState<string | null>(null);
+    const [shareSuccess, setShareSuccess] = useState<string | null>(null);
+
+    const handleShareParty = async (party: any) => {
+        setSharingParty(party.party);
+        try {
+            await new Promise(r => setTimeout(r, 300));
+            const node = document.getElementById(`share-party-${party.party.replace(/\s+/g, '-')}`);
+            if (!node) throw new Error("Capture node not found");
+
+            let dataUrl;
+            try {
+                // Attempt 1: Full capture
+                dataUrl = await toPng(node, {
+                    quality: 1.0,
+                    pixelRatio: 2,
+                    skipFonts: false,
+                    cacheBust: true,
+                });
+            } catch (corsErr) {
+                console.warn("CORS/Capture error, retrying in Safe Mode...");
+                // Attempt 2: Safe Mode (Filter out external images that cause CORS issues)
+                dataUrl = await toPng(node, {
+                    quality: 1.0,
+                    pixelRatio: 2,
+                    skipFonts: false,
+                    cacheBust: true,
+                    filter: (node: any) => {
+                        if (node.tagName === 'IMG' && node.src && node.src.includes('election.gov.np')) {
+                            return false;
+                        }
+                        return true;
+                    }
+                });
+            }
+
+            const link = document.createElement('a');
+            link.download = `${party.party.replace(/\s+/g, '_')}_Stats_2082.png`;
+            link.href = dataUrl;
+            link.click();
+
+            setShareSuccess(party.party);
+            toast.success(`${party.party} result card ready!`);
+            setTimeout(() => setShareSuccess(null), 2000);
+        } catch (err) {
+            console.error("Final capture failure:", err);
+            toast.error("Could not generate card. Please try again.");
+        } finally {
+            setSharingParty(null);
+        }
+    };
 
     return (
         <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
@@ -131,6 +188,31 @@ const PartyResultsView = ({ data, parties, districtStats }: PartyResultsViewProp
                                         <span className="text-primary">{p.seatsWon || 0}W</span>
                                         <span className="opacity-40">/</span>
                                         <span className="text-muted-foreground">{p.candidates}F</span>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleShareParty(p);
+                                            }}
+                                            disabled={!!sharingParty}
+                                            className={cn(
+                                                "w-5 h-5 rounded-full flex items-center justify-center transition-all ml-1",
+                                                shareSuccess === p.party ? "bg-emerald-500 text-white" : "hover:bg-primary/20 text-muted-foreground/50 hover:text-primary"
+                                            )}
+                                        >
+                                            {sharingParty === p.party ? (
+                                                <Clock className="w-3 h-3 animate-spin" />
+                                            ) : shareSuccess === p.party ? (
+                                                <Check className="w-3 h-3" />
+                                            ) : (
+                                                <Share2 className="w-3 h-3" />
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                                {/* Hidden Capture Node for this party */}
+                                <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', pointerEvents: 'none' }}>
+                                    <div id={`share-party-${p.party.replace(/\s+/g, '-')}`}>
+                                        <ShareCard type="party" data={p} />
                                     </div>
                                 </div>
                                 <div className="relative h-1.5 w-full bg-accent/20 rounded-full overflow-hidden">

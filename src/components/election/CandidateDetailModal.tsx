@@ -3,9 +3,13 @@ import type { Candidate } from "@/types/election";
 import { useElectionData } from "@/hooks/useElectionData";
 import {
     X, User, MapPin, Building2, GraduationCap, Briefcase,
-    Users, Trophy, Clock, Hash, Stamp, TrendingUp,
+    Users, Trophy, Clock, Hash, Stamp, TrendingUp, Share2, Download, Check
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { getPartyColor, getCandidateImageUrl, getSymbolImageUrl } from "@/lib/electionUtils";
+import { toPng } from "html-to-image";
+import { ShareCard } from "./ShareCard";
+import { toast } from "sonner";
 
 interface Props {
     candidate: Candidate | null;
@@ -33,9 +37,11 @@ const CandidateDetailModal = ({ candidate, onClose }: Props) => {
     const marginInfo = useMemo(() => {
         if (!candidate || !data) return null;
 
-        // Find all candidates in this constituency
         const inConst = data
-            .filter((c) => c.SCConstID === candidate.SCConstID)
+            .filter((c) =>
+                Number(c.DistrictCd) === Number(candidate.DistrictCd) &&
+                String(c.SCConstID) === String(candidate.SCConstID)
+            )
             .sort((a, b) => (b.TotalVoteReceived || 0) - (a.TotalVoteReceived || 0));
 
         const rank = inConst.findIndex((c) => c.CandidateID === candidate.CandidateID) + 1;
@@ -59,6 +65,61 @@ const CandidateDetailModal = ({ candidate, onClose }: Props) => {
 
         return { rank, marginText, totalInConst: inConst.length };
     }, [candidate, data]);
+
+    const [isSharing, setIsSharing] = useState(false);
+    const [shareSuccess, setShareSuccess] = useState(false);
+
+    const handleShare = async () => {
+        if (!candidate) return;
+
+        setIsSharing(true);
+        try {
+            await new Promise(r => setTimeout(r, 300));
+
+            const node = document.getElementById('share-card-capture');
+            if (!node) throw new Error("Capture node not found");
+
+            let dataUrl;
+            try {
+                // Attempt 1: Full capture
+                dataUrl = await toPng(node, {
+                    quality: 1.0,
+                    pixelRatio: 2,
+                    skipFonts: false,
+                    cacheBust: true,
+                });
+            } catch (corsErr) {
+                console.warn("CORS/Capture error, retrying in Safe Mode...");
+                // Attempt 2: Safe Mode (Filter out external images that cause CORS issues)
+                dataUrl = await toPng(node, {
+                    quality: 1.0,
+                    pixelRatio: 2,
+                    skipFonts: false,
+                    cacheBust: true,
+                    filter: (node: any) => {
+                        if (node.tagName === 'IMG' && node.src && node.src.includes('election.gov.np')) {
+                            return false;
+                        }
+                        return true;
+                    }
+                });
+            }
+
+            const link = document.createElement('a');
+            link.download = `${candidate.CandidateName.replace(/\s+/g, '_')}_Result_2082.png`;
+            link.href = dataUrl;
+            link.click();
+
+            setShareSuccess(true);
+            toast.success("Result card generated!");
+            setTimeout(() => setShareSuccess(false), 2000);
+        } catch (err) {
+            console.error("Final capture failure:", err);
+            toast.error("Could not generate card. Please try again.");
+        } finally {
+            setIsSharing(false);
+        }
+    };
 
     // Party Name Mapping (Common top parties)
     const partyNameMap: Record<string, string> = {
@@ -165,11 +226,39 @@ const CandidateDetailModal = ({ candidate, onClose }: Props) => {
                         </p>
                     </div>
                     <button
+                        onClick={handleShare}
+                        disabled={isSharing}
+                        className={cn(
+                            "w-8 h-8 rounded-full flex items-center justify-center transition-all flex-shrink-0",
+                            shareSuccess ? "bg-emerald-500 text-white" : "hover:bg-muted text-muted-foreground"
+                        )}
+                        title="Share Result Card"
+                    >
+                        {isSharing ? (
+                            <Clock className="w-4 h-4 animate-spin" />
+                        ) : shareSuccess ? (
+                            <Check className="w-4 h-4" />
+                        ) : (
+                            <Share2 className="w-4 h-4" />
+                        )}
+                    </button>
+                    <button
                         onClick={onClose}
                         className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-muted transition-colors flex-shrink-0"
                     >
                         <X className="w-4 h-4 text-muted-foreground" />
                     </button>
+                </div>
+
+                {/* Hidden Capture Area */}
+                <div style={{ position: 'absolute', top: '-9999px', left: '-9999px' }}>
+                    <div id="share-card-capture">
+                        <ShareCard
+                            type="candidate"
+                            data={candidate}
+                            margin={marginInfo?.marginText}
+                        />
+                    </div>
                 </div>
 
                 {/* Vote result banner */}
