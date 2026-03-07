@@ -1,23 +1,24 @@
 {
-    "rewrites": [
+  "rewrites": [
+    {
+      "source": "/election-api/:path*",
+      "destination": "https://result.election.gov.np/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/election-api/(.*)",
+      "headers": [
         {
-            "source": "/election-api/:path*",
-            "destination": "https://result.election.gov.np/:path*"
-        },
-        {
-            "source": "/(.*)",
-            "destination": "/index.html"
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
         }
-    ],
-    "headers": [
-        {
-            "source": "/election-api/(.*)",
-            "headers": [
-                {
-                    "key": "Access-Control-Allow-Origin",
-                    "value": "*"
-                }
-            ]
-        }
-    ]
+      ]
+    }
+  ],
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- public/data"
 }
