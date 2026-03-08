@@ -21,4 +21,4 @@
     }
   ],
   "ignoreCommand": "git diff --quiet HEAD^ HEAD -- public/data"
-}
+} 
