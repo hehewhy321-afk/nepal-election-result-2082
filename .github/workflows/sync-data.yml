@@ -37,13 +37,15 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
 
-          git pull --rebase origin main
-
           git add public/data/election-results-2082.json
 
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "jholey: update election results [skip ci]"
-            git push origin main
+          # If nothing changed, exit cleanly
+          if git diff --cached --quiet; then
+            echo "No changes detected"
+            exit 0
           fi
+
+          git commit -m "jholey: update election results [skip ci]"
+
+          # Push safely
+          git push origin HEAD:main
