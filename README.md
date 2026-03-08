@@ -162,7 +162,7 @@ Contributions are welcome. Please open an issue before submitting a pull request
 3. Commit your changes with clear commit messages.
 4. Push to your fork and open a pull request against `main`.
 
-Please ensure `npm run lint` and `npm run test` pass before submitting.
+Please ensure `npm run lint` and `npm run test` pass before submitting. 
 
 ---
 
