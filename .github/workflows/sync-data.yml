@@ -2,7 +2,7 @@ name: Sync Election Data
 
 on:
   schedule:
-    - cron: '*/2 * * * *' 
+    - cron: '*/2 * * * *'
   workflow_dispatch:
 
 concurrency:
@@ -16,7 +16,7 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -44,14 +44,22 @@ jobs:
           fi
 
       - name: Commit and Push changes
-  if: env.changed == 'true'
-  run: |
-    git config --global user.name "GitHub Action"
-    git config --global user.email "action@github.com"
+        if: env.changed == 'true'
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
 
-    git reset --hard
-    git pull --rebase origin main
+          # Reset to avoid dirty working tree
+          git reset --hard
 
-    git add public/data/election-results-2082.json
-    git commit -m "jholey: update election results [skip ci]"
-    git push origin main
+          # Pull latest changes
+          git pull --rebase origin main
+
+          # Stage updated data
+          git add public/data/election-results-2082.json
+
+          # Commit
+          git commit -m "jholey: update election results [skip ci]"
+
+          # Push
+          git push origin main
