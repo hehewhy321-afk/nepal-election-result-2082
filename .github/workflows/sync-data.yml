@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -27,39 +29,21 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Detect changes after sync
-        run: |
-          OLD_HASH=$(sha256sum public/data/election-results-2082.json | cut -d ' ' -f1)
-
-          npm run sync
-
-          NEW_HASH=$(sha256sum public/data/election-results-2082.json | cut -d ' ' -f1)
-
-          if [ "$OLD_HASH" = "$NEW_HASH" ]; then
-            echo "No election updates"
-            echo "changed=false" >> $GITHUB_ENV
-          else
-            echo "Election results updated"
-            echo "changed=true" >> $GITHUB_ENV
-          fi
+      - name: Run election sync
+        run: npm run sync
 
       - name: Commit and Push changes
-        if: env.changed == 'true'
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
 
-          # Reset to avoid dirty working tree
-          git reset --hard
-
-          # Pull latest changes
           git pull --rebase origin main
 
-          # Stage updated data
           git add public/data/election-results-2082.json
 
-          # Commit
-          git commit -m "jholey: update election results [skip ci]"
-
-          # Push
-          git push origin main
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "jholey: update election results [skip ci]"
+            git push origin main
+          fi
